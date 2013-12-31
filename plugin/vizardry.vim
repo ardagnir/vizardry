@@ -16,7 +16,7 @@
 " 
 " You should have received a copy of the GNU Affero General Public License
 " along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"
+
 let g:save_cpo = &cpo
 set cpo&vim
 if exists("g:loaded_vizardry")
@@ -30,7 +30,8 @@ command! -nargs=? Scry call s:Scry(<q-args>)
 
 function! s:Invoke(input)
   if a:input == ''
-    call DisplayInvoked()
+    source $MYVIMRC
+    echo "Updated vim"
     return
   endif
   let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
@@ -41,7 +42,7 @@ function! s:Invoke(input)
   else
     let banished = (system('ls -d ~/.vim/bundle/'.inputNice.'~ >/dev/null')=='')
     if banished
-      echo "Unbanish ".input."? (y/n)"
+      echo "Unbanish ".inputNice."? (y/n)"
       if response=='y' || response=='Y'
         exec '!mv ~/.vim/bundle/'.inputNice.'~ ~/.vim/bundle/'.inputNice
       endif
@@ -92,7 +93,7 @@ endfunction
 
 function! s:Banish(input)
   if a:input == ''
-    call DisplayBanished()
+    echo 'Banish what?'
     return
   endif
   let inputNice = substitute(a:input, '\s\s*', '', 'g')
