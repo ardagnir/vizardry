@@ -43,9 +43,13 @@ function! s:Invoke(input)
     let banished = (system('ls -d ~/.vim/bundle/'.inputNice.'~ >/dev/null')=='')
     if banished
       echo "Unbanish ".inputNice."? (y/n)"
+      let response=nr2char(getchar())
       if response=='y' || response=='Y'
-        exec '!mv ~/.vim/bundle/'.inputNice.'~ ~/.vim/bundle/'.inputNice
+        call system('mv ~/.vim/bundle/'.inputNice.'~ ~/.vim/bundle/'.inputNice)
+        source $MYVIMRC
       endif
+      redraw
+      echo ""
     else
       let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
 
@@ -63,7 +67,7 @@ function! s:Invoke(input)
         echo "Found ".site."\n(".description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)"
         let response=nr2char(getchar())
         if response=='y' || response=='Y'
-          exec '!git clone https://github.com/'.site.' ~/.vim/bundle/'.inputNice
+          call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.inputNice)
           source $MYVIMRC
         elseif response=='r' || response=='R'
           let newName=""
@@ -83,9 +87,11 @@ function! s:Invoke(input)
               let newName=newName.nr2char(oneChar)
             endif
           endwhile
-          exec '!git clone https://github.com/'.site.' ~/.vim/bundle/'.newName
+          call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.newName)
           source $MYVIMRC
         endif
+        redraw
+        echo ""
       endif
     endif
   endif
