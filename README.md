@@ -47,9 +47,11 @@ Vizardry will prompt you with:
 Just as easy.
 
 ##Requirements
-Vizardry requires pathogen. But you already have pathogen installed, don't you?
+- Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 
-It also needs curl, as well as a bunch of stuff that comes with most \*nix systems.
+- It also needs curl, as well as commandline programs that come with most \*nix systems.
+
+- You will probably have issues if you use Windows.
 
 
 ##Installation
