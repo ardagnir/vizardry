@@ -3,7 +3,7 @@ Vizardry
 
 Remember back in the dark ages of 2013? When you had to search for vim plugins like a wild animal, using your browser?
 
-In 2014, you just type "Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
+In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
 ##Basic Usage
 - Type :<b>Invoke</b> with no keywords to reload the vimrc.
