@@ -3,7 +3,7 @@ Vizardry
 
 Remember back in the dark ages of 2013? When you had to search for vim plugins like a wild animal, using your browser?
 
-In 2014, you just type "Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
+In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
 ##Basic Usage
 - Type :<b>Invoke</b> with no keywords to reload the vimrc.
@@ -47,9 +47,11 @@ Vizardry will prompt you with:
 Just as easy.
 
 ##Requirements
-Vizardry requires pathogen. But you already have pathogen installed, don't you?
+- Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 
-It also needs curl, as well as a bunch of stuff that comes with most \*nix systems.
+- It also needs curl, as well as commandline programs that come with most \*nix systems.
+
+- You will probably have issues if you use Windows.
 
 
 ##Installation
