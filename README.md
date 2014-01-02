@@ -13,7 +13,7 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 ##Additional Usage
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
-- <i>(Not yet implemented)</i> Type :<b>Invoke</b> &lt;number&gt; to download the plugin with that number from the last scry.
+- Type :<b>Invoke</b> &lt;number&gt; to download the plugin with that number from the last scry.
 
 ##Examples
 Suppose you're in the middle of vimming and you have a sudden need to surround random words in scarequotes. You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. More importantly, you're lazy.
