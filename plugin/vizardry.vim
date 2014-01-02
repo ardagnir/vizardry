@@ -34,12 +34,21 @@ function! s:Invoke(input)
     echo "Updated vim"
     return
   endif
-  let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
-  let inputNice = substitute(a:input, '\s\s*', '', 'g')
-  let exists = (system('ls -d ~/.vim/bundle/'.inputNice.' >/dev/null')=='')
-  if exists
-    echo inputNice.' is already invoked'
+
+  let inputNumber = str2nr(a:input)
+  if inputNumber!=0 && inputNumber<10 || a:input=="0"
+    let site=s:siteList[inputNumber]
+    let description=s:descriptionList[inputNumber]
+    echo "Index ".inputNumber." for scry search for ".s:lastScry.":"
+    let inputNice = substitute(s:lastScry, '\s\s*', '', 'g')
   else
+    let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
+    let inputNice = substitute(a:input, '\s\s*', '', 'g')
+    let exists = (system('ls -d ~/.vim/bundle/'.inputNice.' >/dev/null')=='')
+    if exists
+      echo inputNice.' is already invoked'
+      return
+    endif
     let banished = (system('ls -d ~/.vim/bundle/'.inputNice.'~ >/dev/null')=='')
     if banished
       echo "Unbanish ".inputNice."? (y/n)"
@@ -50,51 +59,51 @@ function! s:Invoke(input)
       endif
       redraw
       echo ""
-    else
-      let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
-
-      let site = system('grep "full_name" | head -n 1', curlResults)
-
-      if site==""
-        echo '"'.a:input.'" not found'
-      else
-        let site = substitute(site, '\s*"full_name"[^"]*"\(.*\)".*', '\1', '')
-
-        let description = system('grep "description" | head -n 1', curlResults)
-        let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)".*', '\1', '') "this includes escaped quotes
-        let description = substitute(description, '\\"', '"', 'g')
-
-        echo "Found ".site."\n(".description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)"
-        let response=nr2char(getchar())
-        if response=='y' || response=='Y'
-          call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.inputNice)
-          source $MYVIMRC
-        elseif response=='r' || response=='R'
-          let newName=""
-          let inputting=1
-          while inputting
-            redraw
-            echo "Clone as: ".newName
-            let oneChar=getchar()
-            if nr2char(oneChar)=="\<CR>"
-              let inputting=0
-            elseif oneChar=="\<BS>"
-              if newName!=""
-                let newName = strpart(newName, 0, strlen(newName)-1)
-                echo "gClone as: ".newName
-              endif
-            else
-              let newName=newName.nr2char(oneChar)
-            endif
-          endwhile
-          call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.newName)
-          source $MYVIMRC
-        endif
-        redraw
-        echo ""
-      endif
+      return
     endif
+    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
+
+    let site = system('grep "full_name" | head -n 1', curlResults)
+
+    if site==""
+      echo '"'.a:input.'" not found'
+      return
+    endif
+    let site = substitute(site, '\s*"full_name"[^"]*"\(.*\)".*', '\1', '')
+
+    let description = system('grep "description" | head -n 1', curlResults)
+    let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)".*', '\1', '') "this includes escaped quotes
+    let description = substitute(description, '\\"', '"', 'g')
   endif
+
+  echo "Found ".site."\n(".description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)"
+  let response=nr2char(getchar())
+  if response=='y' || response=='Y'
+    call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.inputNice)
+    source $MYVIMRC
+  elseif response=='r' || response=='R'
+    let newName=""
+    let inputting=1
+    while inputting
+      redraw
+      echo "Clone as: ".newName
+      let oneChar=getchar()
+      if nr2char(oneChar)=="\<CR>"
+        let inputting=0
+      elseif oneChar=="\<BS>"
+        if newName!=""
+          let newName = strpart(newName, 0, strlen(newName)-1)
+          echo "gClone as: ".newName
+        endif
+      else
+        let newName=newName.nr2char(oneChar)
+      endif
+    endwhile
+    call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.newName)
+    source $MYVIMRC
+  endif
+  redraw
+  echo ""
 endfunction
 
 function! s:Banish(input)
@@ -127,22 +136,22 @@ function! s:Scry(input)
     echo "\n"
     call s:DisplayBanished()
   else
-    let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
-    let inputNice = substitute(a:input, '\s\s*', '', 'g')
-    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
+    let s:lastScry = substitute(a:input, '\s\s*', '+', 'g')
+    let lastScryPlus = substitute(a:input, '\s\s*', '', 'g')
+    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
     let site = system('grep "full_name" | head -n 10', curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
-    let siteList = split(site, '\n')
+    let s:siteList = split(site, '\n')
 
     let description = system('grep "description" | head -n 10', curlResults)
     let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*', '\1', 'g') "this includes escaped quotes
     let description = substitute(description, '\\"', '"', 'g')
-    let descriptionList = split(description, '\n')
+    let s:descriptionList = split(description, '\n')
     let index=0
-    let length=len(siteList)
+    let length=len(s:siteList)
     while index<length
-        echo index.": ".siteList[index]
-        echo '('.descriptionList[index].')'
+        echo index.": ".s:siteList[index]
+        echo '('.s:descriptionList[index].')'
         let index=index+1
         if index<length
           echo "\n"
