@@ -123,9 +123,9 @@ endfunction
 
 function! s:Scry(input)
   if a:input == ''
-    call DisplayInvoked()
+    call s:DisplayInvoked()
     echo "\n"
-    call DisplayBanished()
+    call s:DisplayBanished()
   else
     let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
     let inputNice = substitute(a:input, '\s\s*', '', 'g')
@@ -151,28 +151,55 @@ function! s:Scry(input)
   endif
 endfunction
 
-function! DisplayInvoked()
-  let banished = system('ls -d ~/.vim/bundle/*[^~] 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"')
-  if banished == ''
+function! s:DisplayInvoked()
+  let invokedList = split(system('ls -d ~/.vim/bundle/*[^~] 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"'),'\n')
+  if len(invokedList) == ''
     echo "No plugins invoked"
   else
-    echohl Title
+    echohl Define
     echo "Invoked: "
     echohl None
-    echo banished
+    let maxlen=0
+    for invoked in invokedList
+      if len(invoked)>maxlen
+        let maxlen=len(invoked)
+      endif
+    endfor
+    for invoked in invokedList
+      let origin = system('(cd ~/.vim/bundle/'.invoked.'; git config --get remote.origin.url) 2>/dev/null')
+      let origin = strpart(origin, 0, strlen(origin)-1)
+      if origin==''
+        echo invoked
+      else
+        echo invoked.repeat(' ',maxlen-len(invoked)+3)."(".origin.")"
+      endif
+    endfor
   endif
 endfunction
 
-function! DisplayBanished()
-  let banished = system('ls -d ~/.vim/bundle/*~ 2>/dev/null | sed -nr "s,.*bundle/(.*)~,\1,p"')
-  if banished == ''
+function! s:DisplayBanished()
+  let banishedList = split(system('ls -d ~/.vim/bundle/*~ 2>/dev/null | sed -nr "s,.*bundle/(.*)~,\1,p"'),'\n')
+  if len(banishedList) == ''
     echo "No plugins banished"
   else
-    echohl Title
+    echohl Define
     echo "Banished: "
     echohl None
-    echohl Default
-    echo banished
+    let maxlen=0
+    for banished in banishedList
+      if len(banished)>maxlen
+        let maxlen=len(banished)
+      endif
+    endfor
+    for banished in banishedList
+      let origin = system('(cd ~/.vim/bundle/'.banished.'~; git config --get remote.origin.url) 2>/dev/null')
+      let origin = strpart(origin, 0, strlen(origin)-1)
+      if origin==''
+        echo banished
+      else
+        echo banished.repeat(' ',maxlen-len(banished)+3)."(".origin.")"
+      endif
+    endfor
   endif
 endfunction
 
