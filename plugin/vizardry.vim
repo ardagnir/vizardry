@@ -166,7 +166,7 @@ function! s:DisplayInvoked()
       endif
     endfor
     for invoked in invokedList
-      let origin = system('(cd ~/.vim/bundle/'.invoked.'; git config --get remote.origin.url) 2>/dev/null')
+      let origin = system('(cd ~/.vim/bundle/'.invoked.'&& git config --get remote.origin.url) 2>/dev/null')
       let origin = strpart(origin, 0, strlen(origin)-1)
       if origin==''
         echo invoked
@@ -192,7 +192,7 @@ function! s:DisplayBanished()
       endif
     endfor
     for banished in banishedList
-      let origin = system('(cd ~/.vim/bundle/'.banished.'~; git config --get remote.origin.url) 2>/dev/null')
+      let origin = system('(cd ~/.vim/bundle/'.banished.'~ && git config --get remote.origin.url) 2>/dev/null')
       let origin = strpart(origin, 0, strlen(origin)-1)
       if origin==''
         echo banished
@@ -202,9 +202,6 @@ function! s:DisplayBanished()
     endfor
   endif
 endfunction
-
-"To get all plugins and origins:
-"find ~/.vim/bundle/* -maxdepth 0 -type d -exec sh -c 'cd $1; echo $1; git config --get remote.origin.url' - {} \;
 
 let &cpo = g:save_cpo
 unlet g:save_cpo
