@@ -63,8 +63,7 @@ Use pathogen.
 
 ##Notes
 - Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must do it yourself.
-- Invoking a banished plugin unbanishes it instead of redownloading it from github.
-- Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention.
+- Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
 
 ##License
