@@ -26,6 +26,7 @@ let g:loaded_vizardry = 1
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? Banish call s:Banish(<q-args>)
+command! -nargs=? Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
 
 function! s:Invoke(input)
@@ -39,28 +40,26 @@ function! s:Invoke(input)
   if inputNumber!=0 && inputNumber<10 || a:input=="0"
     let site=s:siteList[inputNumber]
     let description=s:descriptionList[inputNumber]
-    echo "Index ".inputNumber." for scry search for ".s:lastScry.":"
+    echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
     let inputNice = substitute(s:lastScry, '\s\s*', '', 'g')
   else
     let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
     let inputNice = substitute(a:input, '\s\s*', '', 'g')
-    let exists = (system('ls -d ~/.vim/bundle/'.inputNice.' >/dev/null')=='')
+    let exists = s:TestForBundle(inputNice)
     if exists
-      echo inputNice.' is already invoked'
-      return
-    endif
-    let banished = (system('ls -d ~/.vim/bundle/'.inputNice.'~ >/dev/null')=='')
-    if banished
-      echo "Unbanish ".inputNice."? (y/n)"
-      let response=nr2char(getchar())
-      if response=='y' || response=='Y'
-        call system('mv ~/.vim/bundle/'.inputNice.'~ ~/.vim/bundle/'.inputNice)
-        source $MYVIMRC
+      let response = s:GetResponseFromPrompt('You already have a bundle called '.inputNice.'. Search anyway? (Yes/No)',['y','n'])
+      if response == 'n'
+        return
       endif
-      redraw
-      echo ""
-      return
     endif
+    "let banished = s:TestForBundle(inputNice.'~')
+    "if banished
+      "if s:GetResponseFromPrompt("Unbanish ".inputNice."? (y/n)", ['y', 'n']) == 'y'
+        "call s:Unbanish(inputNice)
+      "endif
+    "endif
+    redraw
+    echo "Searching..."
     let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
 
     let site = system('grep "full_name" | head -n 1', curlResults)
@@ -76,34 +75,153 @@ function! s:Invoke(input)
     let description = substitute(description, '\\"', '"', 'g')
   endif
 
-  echo "Found ".site."\n(".description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)"
-  let response=nr2char(getchar())
-  if response=='y' || response=='Y'
-    call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.inputNice)
-    source $MYVIMRC
-  elseif response=='r' || response=='R'
-    let newName=""
-    let inputting=1
-    while inputting
-      redraw
-      echo "Clone as: ".newName
-      let oneChar=getchar()
-      if nr2char(oneChar)=="\<CR>"
-        let inputting=0
-      elseif oneChar=="\<BS>"
-        if newName!=""
-          let newName = strpart(newName, 0, strlen(newName)-1)
-          echo "gClone as: ".newName
-        endif
-      else
-        let newName=newName.nr2char(oneChar)
+  let matchingBundle = s:TestRepository(site)
+  if matchingBundle != ""
+    echo 'Found '.site
+    echo '('.description.')'
+    if(matchingBundle[len(matchingBundle)-1] == '~')
+      let matchingBundle = strpart(matchingBundle, 0, strlen(matchingBundle)-1)
+      echohl WarningMsg
+      echo 'This is the repository for banished bundle "'.matchingBundle.'"'
+      echohl None
+      if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
+        call s:Unbanish(matchingBundle)
       endif
-    endwhile
-    call system('git clone https://github.com/'.site.' ~/.vim/bundle/'.newName)
-    source $MYVIMRC
+      redraw
+      echo ""
+    else
+      echohl WarningMsg
+      echo 'This has already been invoked as "'.matchingBundle.'"'
+      echohl None
+    endif
+  else
+    call s:HandleInvokePrompt(site, description, inputNice)
+    redraw
+    echo ""
   endif
+endfunction
+
+function! s:UnbanishCommand(bundle)
+  let niceBundle = substitute(a:bundle, '\s\s*', '', 'g')
+  if s:TestForBundle(niceBundle)
+    echo 'Bundle "'.niceBundle.'" is not banished.'
+  elseif !s:TestForBundle(niceBundle."~")
+    echo 'Bundle "'.niceBundle.'" does not exist.'
+  else
+    if s:Unbanish(niceBundle) != ''
+      echo "Failed to unbanish ".niceBundle.'"'
+    else
+      redraw
+      echo ""
+    endif
+  endif
+endfunction
+
+function! s:Unbanish(bundle)
+  let ret = system('mv ~/.vim/bundle/'.a:bundle.'~ ~/.vim/bundle/'.a:bundle)
+  source $MYVIMRC
+  return ret
+endfunction
+
+function! s:GetResponseFromPrompt(prompt, inputChoices)
+  echo a:prompt
+  while 1
+    let choice = tolower(nr2char(getchar()))
+    for inputChoice in a:inputChoices
+      if inputChoice == choice
+        return choice
+      endif
+    endfor
+    echo "Invalid choice: Type ".s:ListChoices(a:inputChoices).": "
+  endwhile
+endfunction
+
+function! s:ListChoices(choices)
+  let length = len(a:choices)
+  if length == 0
+    return ""
+  elseif length == 1
+    return a:choices[0]
+  elseif length == 2
+    return a:choices[0]." or ".a:choices[1]
+  endif
+
+  let i = 0
+  let ret=''
+  while(i < length-1)
+    ret = ret.a:choices[i].', '
+  endwhile
+  return ret.', or 'a:choices[length-1]
+endfunction
+
+function! s:HandleInvokePrompt(site, description, inputNice)
+  let valid = 0
+  let inputNice = s:FormValidBundle(a:inputNice)
+  while valid == 0
+    let response = s:GetResponseFromPrompt("Found ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)", ['y','n','r'])
+    if response == 'y'
+      call system('git clone https://github.com/'.a:site.' ~/.vim/bundle/'.inputNice)
+      source $MYVIMRC
+      let valid=1
+    elseif response == 'r'
+      let newName = ""
+      let inputting = 1
+      while inputting
+        redraw
+        echo "Clone as: ".newName
+        let oneChar=getchar()
+        if nr2char(oneChar) == "\<CR>"
+          let inputting=0
+        elseif oneChar == "\<BS>"
+          if newName!=""
+            let newName = strpart(newName, 0, strlen(newName)-1)
+            echo "gClone as: ".newName
+          endif
+        else
+          let newName=newName.nr2char(oneChar)
+        endif
+      endwhile
+      if s:TestForBundle(newName)
+        redraw
+        echo "Name already taken"
+      else
+        call system('git clone https://github.com/'.a:site.' ~/.vim/bundle/'.newName)
+        source $MYVIMRC
+        let valid = 1
+      endif
+    elseif response == 'n'
+      let valid = 1
+    endif
+  endwhile
   redraw
   echo ""
+endfunction
+
+function! s:TestRepository(repository)
+  redraw
+  let bundleList = split(system('ls -d ~/.vim/bundle/* 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"'),'\n')
+  for bundle in bundleList
+    if system('cd ~/.vim/bundle/'.bundle.' && git config --get remote.origin.url') == 'https://github.com/'.a:repository."\n"
+      return bundle
+    endif
+  endfor
+  return ""
+endfunction
+
+function! s:TestForBundle(bundle)
+    return (system('ls -d ~/.vim/bundle/'.a:bundle.' >/dev/null')=='')
+endfunction
+
+function! s:FormValidBundle(bundle)
+    if !s:TestForBundle(a:bundle) && !s:TestForBundle(a:bundle.'~')
+      return a:bundle
+    endif
+
+    let counter = 0
+    while s:TestForBundle(a:bundle.counter) || s:TestForBundle(a:bundle.counter.'~')
+      let counter += 1
+    endwhile
+    return a:bundle.counter
 endfunction
 
 function! s:Banish(input)
@@ -138,6 +256,8 @@ function! s:Scry(input)
   else
     let s:lastScry = substitute(a:input, '\s\s*', '+', 'g')
     let lastScryPlus = substitute(a:input, '\s\s*', '', 'g')
+    redraw
+    echo "Searching..."
     let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
     let site = system('grep "full_name" | head -n 10', curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
@@ -149,6 +269,7 @@ function! s:Scry(input)
     let s:descriptionList = split(description, '\n')
     let index=0
     let length=len(s:siteList)
+    redraw
     while index<length
         echo index.": ".s:siteList[index]
         echo '('.s:descriptionList[index].')'
