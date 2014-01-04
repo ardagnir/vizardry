@@ -31,7 +31,7 @@ command! -nargs=? Scry call s:Scry(<q-args>)
 
 function! s:Invoke(input)
   if a:input == ''
-    source $MYVIMRC
+    call s:ReloadScripts()
     echo "Updated vim"
     return
   endif
@@ -119,7 +119,7 @@ endfunction
 
 function! s:Unbanish(bundle)
   let ret = system('mv ~/.vim/bundle/'.a:bundle.'~ ~/.vim/bundle/'.a:bundle)
-  source $MYVIMRC
+  call s:ReloadScripts()
   return ret
 endfunction
 
@@ -161,7 +161,7 @@ function! s:HandleInvokePrompt(site, description, inputNice)
     let response = s:GetResponseFromPrompt("Found ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)", ['y','n','r'])
     if response == 'y'
       call system('git clone https://github.com/'.a:site.' ~/.vim/bundle/'.inputNice)
-      source $MYVIMRC
+      call s:ReloadScripts()
       let valid=1
     elseif response == 'r'
       let newName = ""
@@ -186,7 +186,7 @@ function! s:HandleInvokePrompt(site, description, inputNice)
         echo "Name already taken"
       else
         call system('git clone https://github.com/'.a:site.' ~/.vim/bundle/'.newName)
-        source $MYVIMRC
+        call s:ReloadScripts()
         let valid = 1
       endif
     elseif response == 'n'
@@ -331,6 +331,31 @@ function! s:DisplayBanished()
       endif
     endfor
   endif
+endfunction
+
+function! s:ReloadScripts()
+  source $MYVIMRC
+  let files=[]
+  for plugin in split(&runtimepath,',')
+    for file in split(system ("ls ".plugin.'/plugin/*.vim 2>/dev/null'),'\n')
+      try
+        exec 'source '.file
+      catch
+      endtry
+    endfor
+    for file in split(system ("ls ".plugin.'/autoload/*.vim 2>/dev/null'),'\n')
+      try
+        exec 'source '.file
+      catch
+      endtry
+    endfor
+    for file in split(system ("ls ".plugin.'/syntax/*.vim 2>/dev/null'),'\n')
+      try
+        exec 'source '.file
+      catch
+      endtry
+    endfor
+  endfor
 endfunction
 
 let &cpo = g:save_cpo
