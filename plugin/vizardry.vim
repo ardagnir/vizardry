@@ -28,6 +28,7 @@ command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? Banish call s:Banish(<q-args>)
 command! -nargs=? Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
+command! -nargs=? Magic call s:Magic(<q-args>)
 
 function! s:Invoke(input)
   if a:input == ''
@@ -333,6 +334,8 @@ function! s:DisplayBanished()
   endif
 endfunction
 
+let s:scriptDir= expand('<sfile>:p:h')
+
 function! s:ReloadScripts()
   source $MYVIMRC
   let files=[]
@@ -350,6 +353,13 @@ function! s:ReloadScripts()
       endtry
     endfor
   endfor
+endfunction
+
+function! s:Magic(incantation)
+  try
+    exec a:incantation
+    call system('cat >> '.s:scriptDir.'/magic.vim', a:incantation."\n")
+  endtry
 endfunction
 
 let &cpo = g:save_cpo
