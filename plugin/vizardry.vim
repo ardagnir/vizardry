@@ -339,19 +339,13 @@ function! s:ReloadScripts()
   for plugin in split(&runtimepath,',')
     for file in split(system ("ls ".plugin.'/plugin/*.vim 2>/dev/null'),'\n')
       try
-        exec 'source '.file
+        exec 'silent source '.file
       catch
       endtry
     endfor
     for file in split(system ("ls ".plugin.'/autoload/*.vim 2>/dev/null'),'\n')
       try
-        exec 'source '.file
-      catch
-      endtry
-    endfor
-    for file in split(system ("ls ".plugin.'/syntax/*.vim 2>/dev/null'),'\n')
-      try
-        exec 'source '.file
+        exec 'silent source '.file
       catch
       endtry
     endfor
