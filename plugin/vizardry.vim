@@ -25,8 +25,8 @@ endif
 let g:loaded_vizardry = 1
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
-command! -nargs=? Banish call s:Banish(<q-args>)
-command! -nargs=? Unbanish call s:UnbanishCommand(<q-args>)
+command! -nargs=? -complete=custom,s:ListInvoked Banish call s:Banish(<q-args>)
+command! -nargs=? -complete=custom,s:ListBanished Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
 command! -nargs=? Magic call s:Magic(<q-args>)
 
@@ -280,6 +280,16 @@ function! s:Scry(input)
         endif
     endwhile
   endif
+endfunction
+
+function! s:ListInvoked(A,L,P)
+  let invokedList = system('ls -d ~/.vim/bundle/*[^~] 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"')
+  return invokedList
+endfunction
+
+function! s:ListBanished(A,L,P)
+  let banishedList = system('ls -d ~/.vim/bundle/*~ 2>/dev/null | sed -nr "s,.*bundle/(.*)~,\1,p"')
+  return banishedList
 endfunction
 
 function! s:DisplayInvoked()
