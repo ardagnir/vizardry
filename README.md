@@ -25,6 +25,7 @@ Just type:
     :Invoke surround
 
 Vizardry will pop up a prompt saying:
+
     Found tpope/vim-surround
     (surround.vim: quoting/parenthesizing made simple)
 
