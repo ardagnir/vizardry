@@ -390,6 +390,10 @@ endfunction
 
 function! s:Magic(incantation)
   let incantationList = split(a:incantation, ' ')
+  if len(incantationList) == 0
+    echo "No plugin given"
+    return
+  endif
   let plugin = incantationList[0]
   let incantation = join(incantationList[1:],' ')
 
