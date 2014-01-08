@@ -28,7 +28,10 @@ command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListInvoked Banish call s:Banish(<q-args>)
 command! -nargs=? -complete=custom,s:ListBanished Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
-command! -nargs=? Magic call s:Magic(<q-args>)
+command! -nargs=? -complete=custom,s:ListInvoked Magic call s:Magic(<q-args>)
+command! -nargs=? -complete=custom,s:ListInvoked Magicedit call s:MagicEdit(<q-args>)
+command! -nargs=? -complete=custom,s:ListInvoked Magicsplit call s:MagicSplit(<q-args>)
+command! -nargs=? -complete=custom,s:ListInvoked Magicvsplit call s:MagicVSplit(<q-args>)
 
 function! s:Invoke(input)
   if a:input == ''
@@ -120,6 +123,7 @@ endfunction
 
 function! s:Unbanish(bundle)
   let ret = system('mv ~/.vim/bundle/'.a:bundle.'~ ~/.vim/bundle/'.a:bundle)
+  call s:UnbanishMagic(a:bundle)
   call s:ReloadScripts()
   return ret
 endfunction
@@ -232,6 +236,7 @@ function! s:Banish(input)
   endif
   let inputNice = substitute(a:input, '\s\s*', '', 'g')
   let error=system('mv ~/.vim/bundle/'.inputNice.' ~/.vim/bundle/'.inputNice.'~ >/dev/null')
+  call s:BanishMagic(inputNice)
 
   if error==''
     echo "Banished ".inputNice
@@ -350,13 +355,13 @@ function! s:ReloadScripts()
   source $MYVIMRC
   let files=[]
   for plugin in split(&runtimepath,',')
-    for file in split(system ("ls ".plugin.'/plugin/*.vim 2>/dev/null'),'\n')
+    for file in split(system ("find ".plugin.'/plugin -name "*.vim" 2>/dev/null'),'\n')
       try
         exec 'silent source '.file
       catch
       endtry
     endfor
-    for file in split(system ("ls ".plugin.'/autoload/*.vim 2>/dev/null'),'\n')
+    for file in split(system ("find ".plugin.'/autoload -name "*.vim" 2>/dev/null'),'\n')
       try
         exec 'silent source '.file
       catch
@@ -365,11 +370,46 @@ function! s:ReloadScripts()
   endfor
 endfunction
 
+function! s:MagicName(plugin)
+  if a:plugin == '*'
+    return s:scriptDir.'/magic/magic.vim'
+  else
+    return s:scriptDir.'/magic/magic_'.a:plugin.'.vim'
+  endif
+endfunction
+
+function! s:BanishMagic(plugin)
+  let fileName = s:MagicName(a:plugin)
+  call system('mv '.fileName.' '.fileName.'~')
+endfunction
+
+function! s:UnbanishMagic(plugin)
+  let fileName = s:MagicName(a:plugin)
+  call system('mv '.fileName.'~ '.fileName)
+endfunction
+
 function! s:Magic(incantation)
+  let incantationList = split(a:incantation, ' ')
+  let plugin = incantationList[0]
+  let incantation = join(incantationList[1:],' ')
+
   try
-    exec a:incantation
-    call system('cat >> '.s:scriptDir.'/magic.vim', a:incantation."\n")
+    exec incantation
+    call system('mkdir '.s:scriptDir.'/magic')
+    call system('cat >> '.s:MagicName(plugin), incantation."\n")
   endtry
+endfunction
+
+function! s:MagicEdit(incantation)
+  exec "edit" s:MagicName(a:incantation)."*"
+endfunction
+
+function! s:MagicSplit(incantation)
+  exec "split" s:MagicName(a:incantation)."*"
+endfunction
+
+function! s:MagicVSplit(incantation)
+  exec "vsplit ".s:MagicName(a:incantation)."*"
 endfunction
 
 let &cpo = g:save_cpo
