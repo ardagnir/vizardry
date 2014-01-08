@@ -15,7 +15,7 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
-- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#Magical Usage) below.
+- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#Magic) below.
 
 ##Examples
 Suppose you're in the middle of vimming and you have a sudden need to surround "random" words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. Most importantly, you're lazy.
@@ -47,12 +47,12 @@ Vizardry will prompt you with:
 
 Just as easy.
 
-##Magical Usage
+##Magic
   Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
 
-- Type :<b>Magic</b> * &lt;magic words&gt; and add the magic words to a magic file that acts similarly to your vimrc.
-- Type :<b>Magic</b> &lt;plugin&gt; &lt;magic words&gt; and the magic words will only take effect while that plugin is installed and not banished.
-- Type :<b>Magic{edit/split/vsplit}</b> &lt;plugin&gt; to edit the magic file for that plugin.
+- Type :<b>Magic</b> * &lt;magic words&gt; and add thse words to a file that acts similarly to your vimrc.
+- Type :<b>Magic</b> &lt;plugin&gt; &lt;magic words&gt; to add plugin-specific globals and settings. These are only used when that plugin isn't banished.
+- Type :<b>Magic{edit/split/vsplit}</b> &lt;plugin&gt; to edit/split/vsplit the magic file for that plugin.
 
 
 ##Requirements
