@@ -15,16 +15,16 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
+- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#Magical Usage) below.
 
 ##Examples
-Suppose you're in the middle of vimming and you have a sudden need to surround random words in scarequotes. You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. More importantly, you're lazy.
+Suppose you're in the middle of vimming and you have a sudden need to surround "random" words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. Most importantly, you're lazy.
 
 Just type:
 
     :Invoke surround
 
 Vizardry will pop up a prompt saying:
-
     Found tpope/vim-surround
     (surround.vim: quoting/parenthesizing made simple)
 
@@ -32,7 +32,7 @@ Vizardry will pop up a prompt saying:
 
 Press Y and you can immediately start surrounding things. It's that easy.
 <br><br><br>
-To make things worse, sometimes people are jerks and name plugins based on what they find amusing, instead of what the plugins do. Say you're running multiple instances of vim and need a package to sync registers.
+Even plugins with vague or silly names can be found with vizardry. Imagine you're running multiple instances of vim and need a package to sync registers.
 
 Type:
 
@@ -47,13 +47,20 @@ Vizardry will prompt you with:
 
 Just as easy.
 
+##Magical Usage
+  Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
+
+- Type :<b>Magic</b> * &lt;magic words&gt; and add the magic words to a magic file that acts similarly to your vimrc.
+- Type :<b>Magic</b> &lt;plugin&gt; &lt;magic words&gt; and the magic words will only take effect while that plugin is installed and not banished.
+- Type :<b>Magic{edit/split/vsplit}</b> &lt;plugin&gt; to edit the magic file for that plugin.
+
+
 ##Requirements
 - Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
 
-- You will probably have issues if you use Windows.
-
+- You will probably have issues if you use a Windows OS.
 
 ##Installation
 Use pathogen.
