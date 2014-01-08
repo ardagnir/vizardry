@@ -6,8 +6,8 @@ Remember back in the dark ages of 2013? When you had to search for vim plugins l
 In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
 ##Basic Usage
-- Type :<b>Invoke</b> with no keywords to reload the vimrc.
-- Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload the vimrc.
+- Type :<b>Invoke</b> with no keywords to reload your plugins.
+- Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
 - Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
 
 ##Additional Usage
