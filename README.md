@@ -15,7 +15,7 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
-- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#Magic) below.
+- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#magic) below.
 
 ##Examples
 Suppose you're in the middle of vimming and you have a sudden need to surround "random" words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. Most importantly, you're lazy.
