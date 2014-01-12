@@ -29,13 +29,13 @@ if !exists("g:VizardryGitMethod")
 endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
-command! -nargs=? -complete=custom,s:ListInvoked Banish call s:Banish(<q-args>)
-command! -nargs=? -complete=custom,s:ListBanished Unbanish call s:UnbanishCommand(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllBanished Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
-command! -nargs=? -complete=custom,s:ListInvoked Magic call s:Magic(<q-args>)
-command! -nargs=? -complete=custom,s:ListInvoked Magicedit call s:MagicEdit(<q-args>)
-command! -nargs=? -complete=custom,s:ListInvoked Magicsplit call s:MagicSplit(<q-args>)
-command! -nargs=? -complete=custom,s:ListInvoked Magicvsplit call s:MagicVSplit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magic call s:Magic(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicedit call s:MagicEdit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicsplit call s:MagicSplit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicvsplit call s:MagicVSplit(<q-args>)
 
 function! s:Invoke(input)
   if a:input == ''
@@ -93,7 +93,7 @@ function! s:Invoke(input)
       echo 'This is the repository for banished bundle "'.matchingBundle.'"'
       echohl None
       if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
-        call s:Unbanish(matchingBundle)
+        call s:Unbanish(matchingBundle, 1)
       endif
       redraw
       echo ""
@@ -111,20 +111,20 @@ endfunction
 
 function! s:UnbanishCommand(bundle)
   let niceBundle = substitute(a:bundle, '\s\s*', '', 'g')
-  let matches = s:ListBundles(niceBundle."~")
+  let matches = s:ListBanished(a:bundle)
   if matches!=''
-    let matches = substitute(matches,'[^\n]*/\([^\n/]*\)\~\n', '\1\n', 'g')
     let matchList = split(matches, "\n")
+    let success=0
     for aMatch in matchList
-      if s:Unbanish(aMatch) != ''
+      if s:Unbanish(aMatch, 0) != ''
         echo 'Failed to unbanish "'.aMatch.'"'
       else
-        redraw
-        echo ""
+        echo "Unbanished ".aMatch
       endif
     endfor
+    call s:ReloadScripts()
   else
-    if s:TestForBundle(niceBundle)
+    if s:ListInvoked(a:bundle)!=''
       echo 'Bundle "'.niceBundle.'" is not banished.'
     else
       echo 'Bundle "'.niceBundle.'" does not exist.'
@@ -132,12 +132,12 @@ function! s:UnbanishCommand(bundle)
   endif
 endfunction
 
-function! s:Unbanish(bundle)
+function! s:Unbanish(bundle, reload)
   let ret = system('mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle)
   call s:UnbanishMagic(a:bundle)
-  call s:ReloadScripts()
-  echo s:bundleDir
-  echo a:bundle
+  if a:reload
+    call s:ReloadScripts()
+  endif
   return ret
 endfunction
 
@@ -231,11 +231,7 @@ function! s:TestRepository(repository)
 endfunction
 
 function! s:TestForBundle(bundle)
-    return s:ListBundles(a:bundle)!=''
-endfunction
-
-function! s:ListBundles(bundle)
-    return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')
+    return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')!=''
 endfunction
 
 function! s:FormValidBundle(bundle)
@@ -256,22 +252,25 @@ function! s:Banish(input)
     return
   endif
   let inputNice = substitute(a:input, '\s\s*', '', 'g')
-  let error=system('mv '.s:bundleDir.'/'.inputNice.' '.s:bundleDir.'/'.inputNice.'~ >/dev/null')
-  call s:BanishMagic(inputNice)
-
-  if error==''
-    echo "Banished ".inputNice
-  elseif match(error, "No such file") !=-1
-    let error=system('ls '.s:bundleDir.'/'.inputNice.'~ >/dev/null')
-    if error!=''
-      echo 'There is no plugin named "'.inputNice.'"'
-    else
+  let matches = s:ListInvoked(inputNice)
+  if matches == ''
+    if ListBanished(inputNice) != ''
       echo '"'.inputNice.'" has already been banished'
+    else
+      echo 'There is no plugin named "'.inputNice.'"'
     endif
   else
-    "remove trailing newline
-    let error = strpart(error, 0, strlen(error)-1)
-    echo "Error renaming file: ".error
+    let matchList = split(matches,'\n')
+    for aMatch in matchList
+      let error=system('mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null')
+      call s:BanishMagic(aMatch)
+      if error==''
+        echo "Banished ".aMatch
+      else
+        let error = strpart(error, 0, strlen(error)-1)
+        echo "Error renaming file: ".error
+      endif
+    endfor
   endif
 endfunction
 
@@ -308,18 +307,26 @@ function! s:Scry(input)
   endif
 endfunction
 
-function! s:ListInvoked(A,L,P)
-  let invokedList = system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*/(.*),\1,p"')
+function! s:ListAllInvoked(A,L,P)
+  return s:ListInvoked('*')
+endfunction
+
+function! s:ListAllBanished(A,L,P)
+  return s:ListBanished('*')
+endfunction
+
+function! s:ListInvoked(match)
+  let invokedList = system('ls -d '.s:bundleDir.'/'.a:match.' 2>/dev/null | grep -v "~$" | sed -nr "s,.*/(.*),\1,p"')
   return invokedList
 endfunction
 
-function! s:ListBanished(A,L,P)
-  let banishedList = system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"')
+function! s:ListBanished(match)
+  let banishedList = system('ls -d '.s:bundleDir.'/'.a:match.'~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"')
   return banishedList
 endfunction
 
 function! s:DisplayInvoked()
-  let invokedList = split(system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*/(.*),\1,p"'),'\n')
+  let invokedList = split(s:ListInvoked('*'),'\n')
   if len(invokedList) == ''
     echohl Define
     echo "No plugins invoked"
@@ -347,7 +354,7 @@ function! s:DisplayInvoked()
 endfunction
 
 function! s:DisplayBanished()
-  let banishedList = split(system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"'),'\n')
+  let banishedList = split(s:ListBanished('*'),'\n')
   if len(banishedList) == ''
     echohl Define
     echo "No plugins banished"
