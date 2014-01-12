@@ -111,24 +111,33 @@ endfunction
 
 function! s:UnbanishCommand(bundle)
   let niceBundle = substitute(a:bundle, '\s\s*', '', 'g')
-  if s:TestForBundle(niceBundle)
-    echo 'Bundle "'.niceBundle.'" is not banished.'
-  elseif !s:TestForBundle(niceBundle."~")
-    echo 'Bundle "'.niceBundle.'" does not exist.'
+  let matches = s:ListBundles(niceBundle."~")
+  if matches!=''
+    let matches = substitute(matches,'[^\n]*/\([^\n/]*\)\~\n', '\1\n', 'g')
+    let matchList = split(matches, "\n")
+    for aMatch in matchList
+      if s:Unbanish(aMatch) != ''
+        echo 'Failed to unbanish "'.aMatch.'"'
+      else
+        redraw
+        echo ""
+      endif
+    endfor
   else
-    if s:Unbanish(niceBundle) != ''
-      echo "Failed to unbanish ".niceBundle.'"'
+    if s:TestForBundle(niceBundle)
+      echo 'Bundle "'.niceBundle.'" is not banished.'
     else
-      redraw
-      echo ""
+      echo 'Bundle "'.niceBundle.'" does not exist.'
     endif
   endif
 endfunction
 
 function! s:Unbanish(bundle)
-  let ret = system('mv ~'.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle)
+  let ret = system('mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle)
   call s:UnbanishMagic(a:bundle)
   call s:ReloadScripts()
+  echo s:bundleDir
+  echo a:bundle
   return ret
 endfunction
 
@@ -222,7 +231,11 @@ function! s:TestRepository(repository)
 endfunction
 
 function! s:TestForBundle(bundle)
-    return (system('ls -d '.s:bundleDir.'/'.a:bundle.' >/dev/null')=='')
+    return s:ListBundles(a:bundle)!=''
+endfunction
+
+function! s:ListBundles(bundle)
+    return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')
 endfunction
 
 function! s:FormValidBundle(bundle)
@@ -296,19 +309,21 @@ function! s:Scry(input)
 endfunction
 
 function! s:ListInvoked(A,L,P)
-  let invokedList = system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"')
+  let invokedList = system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*/(.*),\1,p"')
   return invokedList
 endfunction
 
 function! s:ListBanished(A,L,P)
-  let banishedList = system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*bundle/(.*)~,\1,p"')
+  let banishedList = system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"')
   return banishedList
 endfunction
 
 function! s:DisplayInvoked()
-  let invokedList = split(system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"'),'\n')
+  let invokedList = split(system('ls -d '.s:bundleDir.'/*[^~] 2>/dev/null | sed -nr "s,.*/(.*),\1,p"'),'\n')
   if len(invokedList) == ''
+    echohl Define
     echo "No plugins invoked"
+    echohl None
   else
     echohl Define
     echo "Invoked: "
@@ -332,9 +347,11 @@ function! s:DisplayInvoked()
 endfunction
 
 function! s:DisplayBanished()
-  let banishedList = split(system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*bundle/(.*)~,\1,p"'),'\n')
+  let banishedList = split(system('ls -d '.s:bundleDir.'/*~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"'),'\n')
   if len(banishedList) == ''
+    echohl Define
     echo "No plugins banished"
+    echohl None
   else
     echohl Define
     echo "Banished: "
