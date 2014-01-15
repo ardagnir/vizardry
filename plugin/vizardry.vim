@@ -221,7 +221,7 @@ endfunction
 
 function! s:TestRepository(repository)
   redraw
-  let bundleList = split(system('ls -d '.s:bundleDir.'/* 2>/dev/null | sed -nr "s,.*bundle/(.*),\1,p"'),'\n')
+  let bundleList = split(system('ls -d '.s:bundleDir.'/* 2>/dev/null | sed -n "s,.*bundle/\(.*\),\1,p"'),'\n')
   for bundle in bundleList
     if system('cd '.s:bundleDir.'/'.bundle.' && git config --get remote.origin.url') == 'https://github.com/'.a:repository."\n"
       return bundle
@@ -316,12 +316,12 @@ function! s:ListAllBanished(A,L,P)
 endfunction
 
 function! s:ListInvoked(match)
-  let invokedList = system('ls -d '.s:bundleDir.'/'.a:match.' 2>/dev/null | grep -v "~$" | sed -nr "s,.*/(.*),\1,p"')
+  let invokedList = system('ls -d '.s:bundleDir.'/'.a:match.' 2>/dev/null | grep -v "~$" | sed -n "s,.*/\(.*\),\1,p"')
   return invokedList
 endfunction
 
 function! s:ListBanished(match)
-  let banishedList = system('ls -d '.s:bundleDir.'/'.a:match.'~ 2>/dev/null | sed -nr "s,.*/(.*)~,\1,p"')
+  let banishedList = system('ls -d '.s:bundleDir.'/'.a:match.'~ 2>/dev/null | sed -n "s,.*/\(.*\)~,\1,p"')
   return banishedList
 endfunction
 
