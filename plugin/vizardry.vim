@@ -167,13 +167,14 @@ function! s:ListChoices(choices)
   let i = 0
   let ret=''
   while(i < length-1)
-    ret = ret.a:choices[i].', '
+    let ret = ret.a:choices[i].', '
+    let i+=1
   endwhile
-  return ret.', or 'a:choices[length-1]
+  return ret.'or '.a:choices[length-1]
 endfunction
 
 function! s:GrabRepository(site, name)
-  call system('cd '.s:bundleDir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.s:bundleDir.'/'.a:name)
+  call system('cd '.s:bundleDir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.a:name)
 endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice)
