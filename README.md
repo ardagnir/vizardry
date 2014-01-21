@@ -18,7 +18,7 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 - Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#magic) below.
 
 ##Examples
-Suppose you're in the middle of vimming and you have a sudden need to surround "random" words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim or vim-surround or vim-surround-plugin. Most importantly, you're lazy.
+Suppose you're in the middle of vimming and you have a sudden need to surround random words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim, vim-surround or vim-surround-plugin. Most importantly, you're lazy.
 
 Just type:
 
@@ -73,6 +73,7 @@ Use pathogen.
 - Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must do it yourself.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
+- If you want to use submodules instead of cloning, set g:VizardryGitMethod to "submodule add"
 
 ##License
 Vizardry is licensed under the AGPL v3
