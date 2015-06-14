@@ -5,13 +5,17 @@ Remember back in the dark ages of 2013? When you had to search for vim plugins l
 
 In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
+In 2015 you can even upgrade plugins from any git repo or vim.org using [:Upgrade](https://github.com/dbeniamine/vizardry#upgrade).
+
+
 ## <a name="Fork">Why this fork ?</a>
 
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
++ Destruct command to actually remove a plugin.
++ Upgrade command to upgrade one or every plugins see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
 + Good submodule handeling for people having their vim config in a git repo
 see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
-+ Destruct command to actually remove a plugin.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
 
 ### <a name="submodules">How to use vizardry with submodules ?</a>
@@ -31,6 +35,7 @@ are the defaults):
     let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
           \'Banish': "[Vizardry] Banished vim submodule:",
           \'Destruct': "[Vizardry] Destructed vim submodule:",
+          \'Upgrade': "[Vizardry] Upgraded vim submodule:",
           \}
 
 Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
@@ -46,6 +51,7 @@ updated and a minimal commit will be created.
 - Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
 - Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
 - Type :<b>Destruct</b> &lt;samekeyword&gt; to remove definitively that plugin files.
+- Type :<b>Upgrade</b>  \[samekeyword\] to upgrade one or every plugns see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
 
 ##Additional Usage
 - Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
@@ -53,6 +59,7 @@ updated and a minimal commit will be created.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
 - Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/dbeniamine/vizardry#magic) below.
+
 
 ##Examples
 Suppose you're in the middle of vimming and you have a sudden need to surround random words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim, vim-surround or vim-surround-plugin. Most importantly, you're lazy.
@@ -85,6 +92,18 @@ Vizardry will prompt you with:
 
 Just as easy.
 
+## Upgrade
+
+The ugrade function is able to upgrade any plugin instaled from a git
+repository or vim.org.
+
+To upgrade plugins from vim.org, you need to add a metainfos file.
+A metainfos file contains two lines
+1. The url of the vimscript
+2. The version number (0 to initialize the synchronization)
+
+`atool` is required for upgrading sripts from vim.org
+
 ##Magic
   Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
 
@@ -97,6 +116,8 @@ Just as easy.
 - Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
+
++ `atool` is required for upgrading sripts from vim.org
 
 - You will probably have issues if you use a Windows OS.
 

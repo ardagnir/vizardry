@@ -31,6 +31,7 @@ elseif (g:VizardryGitMethod =="submodule add")
     let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
           \'Banish': "[Vizardry] Banished vim submodule:",
           \'Destruct': "[Vizardry] Destructed vim submodule:",
+          \'Upgrade': "[Vizardry] Upgraded vim submodule:",
           \}
   endif
   if !exists("g:VizardryGitBaseDir")
@@ -45,11 +46,69 @@ command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
 command! -nargs=? -complete=custom,s:ListAllInvoked Destruct call s:Banish(<q-args>, 'Destruct')
 command! -nargs=? -complete=custom,s:ListAllBanished Unbanish call s:UnbanishCommand(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllBanished Upgrade call s:Upgrade(<q-args>,0)
 command! -nargs=? Scry call s:Scry(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magic call s:Magic(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicedit call s:MagicEdit(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicsplit call s:MagicSplit(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicvsplit call s:MagicVSplit(<q-args>)
+
+function s:GitUpgrade(path)
+  let l:ret=system('cd '.a:path.' && git pull origin master')
+  echo l:ret
+  if l:ret=~'Already up-to-date'
+    return ''
+  endif
+  return a:path
+endfunction
+
+function s:VimOrgUpgrade(path)
+  let l:ret=system(s:UpgradeVimOrgPath.' '.a:path)
+  echo l:ret
+  if l:ret=~'upgrading .*'
+    return a:path
+  elseif l:ret=~"Unable to" || l:ret=~'No metainfos'
+    echo l:ret
+  endif
+  return ''
+endfunction
+
+function! s:Upgrade(input, rec)
+  if a:input==""
+    let invokedList = split(s:ListInvoked('*'),'\n')
+    let l:files=''
+    for plug in invokedList
+      let l:files.=' '.s:Upgrade(plug,1)
+    endfor
+  else
+    let inputNice = substitute(a:input, '\s\s*', '', 'g')
+    let exists = s:TestForBundle(inputNice)
+    let exists = s:TestForBundle(inputNice)
+    if !exists
+      echo "No plugin named ".inputNice." aborting upgrade"
+      return
+    endif
+    if glob(s:bundleDir.'/'.inputNice.'/.git')!=""
+      let l:files=s:GitUpgrade(s:bundleDir.'/'.inputNice)
+    else
+      let l:files=s:VimOrgUpgrade(s:bundleDir.'/'.inputNice)
+    endif
+  endif
+  let l:files=substitute(l:files,'^\s*$','','')
+  if a:rec==0
+    if l:files!=""
+      if exists("g:VizardryGitBaseDir") && 
+        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Upgrade'].' '.l:files.'" '.l:files.' .gitmodules'
+      else
+        echo "Upgraded plugins: ".l:files
+      endif
+    else
+      echo "No plugin upgraded"
+    endif
+  else
+    return l:files
+  endif
+endfunction
 
 function! s:Invoke(input)
   if a:input == ''
@@ -76,9 +135,9 @@ function! s:Invoke(input)
     endif
     "let banished = s:TestForBundle(inputNice.'~')
     "if banished
-      "if s:GetResponseFromPrompt("Unbanish ".inputNice."? (y/n)", ['y', 'n']) == 'y'
-        "call s:Unbanish(inputNice)
-      "endif
+    "if s:GetResponseFromPrompt("Unbanish ".inputNice."? (y/n)", ['y', 'n']) == 'y'
+    "call s:Unbanish(inputNice)
+    "endif
     "endif
     redraw
     echo "Searching..."
@@ -261,19 +320,19 @@ function! s:TestRepository(repository)
 endfunction
 
 function! s:TestForBundle(bundle)
-    return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')!=''
+  return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')!=''
 endfunction
 
 function! s:FormValidBundle(bundle)
-    if !s:TestForBundle(a:bundle) && !s:TestForBundle(a:bundle.'~')
-      return a:bundle
-    endif
+  if !s:TestForBundle(a:bundle) && !s:TestForBundle(a:bundle.'~')
+    return a:bundle
+  endif
 
-    let counter = 0
-    while s:TestForBundle(a:bundle.counter) || s:TestForBundle(a:bundle.counter.'~')
-      let counter += 1
-    endwhile
-    return a:bundle.counter
+  let counter = 0
+  while s:TestForBundle(a:bundle.counter) || s:TestForBundle(a:bundle.counter.'~')
+    let counter += 1
+  endwhile
+  return a:bundle.counter
 endfunction
 
 function! s:Banish(input, type)
@@ -342,12 +401,12 @@ function! s:Scry(input)
     let length=len(s:siteList)
     redraw
     while index<length
-        echo index.": ".s:siteList[index]
-        echo '('.s:descriptionList[index].')'
-        let index=index+1
-        if index<length
-          echo "\n"
-        endif
+      echo index.": ".s:siteList[index]
+      echo '('.s:descriptionList[index].')'
+      let index=index+1
+      if index<length
+        echo "\n"
+      endif
     endwhile
   endif
 endfunction
@@ -428,6 +487,7 @@ endfunction
 
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
+let s:UpgradeVimOrgPath = s:scriptDir.'/UpgradeVimOrgPlugins.sh'
 let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
 let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
 
