@@ -5,6 +5,46 @@ Remember back in the dark ages of 2013? When you had to search for vim plugins l
 
 In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
+## Why this fork ?
+
+This fork add a real submodule management to the [original vizardry plugin
+from ardagnir](https://github.com/ardagnir/vizardry) for people having their
+vim config in a git repo.
+
+Moreover, `:Helptags` is called every time a sumodule is Invoked.
+
+### How to use vizardry with submodules ?
+
+Set the following variables in your vimrc:
+
+    let g:VizardryGitMethod="submodule add"
+    let g:VizardryGitBaseDir="/path/to/your/git/repo"
+
+The second variable ** must be** the root of the repo containing your vim
+files.
+
+Optionnaly you can set the vim commit messages (the name of the modified
+plugin will always be happened in the end of the message, the proposed values
+are the defaults)
+
+    let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
+    let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
+
+Each time you Invoke are Bannished a module, the submodule will be correctly
+updated and a minimal commit will be created.
+
+**Note:**
+
++ Commits create by Vizardry are not automatically pushed.
++ the .gitmodule is included in each commit, do not use Invoke or Bannished if
+it contains some bad modifications.
+
+### Todo:
+
++ Create a vim documentation
++ Add a remove command
+
+
 ##Basic Usage
 - Type :<b>Invoke</b> with no keywords to reload your plugins.
 - Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.

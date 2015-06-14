@@ -26,6 +26,15 @@ let g:loaded_vizardry = 1
 
 if !exists("g:VizardryGitMethod")
   let g:VizardryGitMethod = "clone"
+elseif (g:VizardryGitMethod =="submodule add")
+  let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
+  let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
+  if !exists("g:VizardryGitBaseDir")
+    echo "g:VizardryGitBaseDir must be set when VizardryGitMethod is submodule"
+    echo "Vizardry not loaded"
+    unlet g:loaded_vizardry
+    finish
+  endif
 endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
@@ -94,6 +103,7 @@ function! s:Invoke(input)
       echohl None
       if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
         call s:Unbanish(matchingBundle, 1)
+        execute ':Helptags'
       endif
       redraw
       echo ""
@@ -133,7 +143,13 @@ function! s:UnbanishCommand(bundle)
 endfunction
 
 function! s:Unbanish(bundle, reload)
-  let ret = system('mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle)
+  if exists("g:VizardryGitBaseDir")
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsg.' '.a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
+    let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.a:bundle.'~ '.s:relativeBundleDir.'/'.a:bundle.l:commit
+  else
+    let l:cmd='mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle
+  endif
+  let ret = system(l:cmd)
   call s:UnbanishMagic(a:bundle)
   if a:reload
     call s:ReloadScripts()
@@ -174,7 +190,14 @@ function! s:ListChoices(choices)
 endfunction
 
 function! s:GrabRepository(site, name)
-  call system('cd '.s:bundleDir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.a:name)
+  if exists("g:VizardryGitBaseDir")
+    let l:basedir=g:VizardryGitBaseDir
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsg.' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
+  else
+    let l:commit=''
+    let l:basedir='$HOME'
+  endif
+  execute ':!cd '.l:basedir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.s:relativeBundleDir.'/'.a:name.l:commit
 endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice)
@@ -209,6 +232,7 @@ function! s:HandleInvokePrompt(site, description, inputNice)
         echo "Name already taken"
       else
         call s:GrabRepository(a:site, newName)
+        execute ':Helptags'
         call s:ReloadScripts()
         let valid = 1
       endif
@@ -263,7 +287,13 @@ function! s:Banish(input)
   else
     let matchList = split(matches,'\n')
     for aMatch in matchList
-      let error=system('mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null')
+      if exists("g:VizardryGitBaseDir")
+        let l:commit=' && git commit -m "'.g:VizardryCommitRmMsg.' '.aMatch.'" '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~ .gitmodules'
+        let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~'.l:commit
+      else
+        let l:cmd='mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null'
+      endif
+      let error=system(l:cmd)
       call s:BanishMagic(aMatch)
       if error==''
         echo "Banished ".aMatch
@@ -384,6 +414,8 @@ endfunction
 
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
+let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
+let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
 
 function! s:ReloadScripts()
   source $MYVIMRC
