@@ -25,19 +25,18 @@ files.
 
 Optionnaly you can set the vim commit messages (the name of the modified
 plugin will always be happened in the end of the message, the proposed values
-are the defaults)
+are the defaults):
 
     let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
     let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
 
-Each time you Invoke are Bannished a module, the submodule will be correctly
+Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
 updated and a minimal commit will be created.
 
-**Note:**
+#### Note:
 
-+ Commits create by Vizardry are not automatically pushed.
-+ the .gitmodule is included in each commit, do not use Invoke or Bannished if
-it contains some bad modifications.
++ Commits created by Vizardry are not automatically pushed.
++ The `.gitmodule` is included in each commit, do not use `Invoke` or `Bannish` if it contains some bad modifications.
 
 ### Todo:
 
