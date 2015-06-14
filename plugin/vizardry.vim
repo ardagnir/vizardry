@@ -67,8 +67,6 @@ function s:VimOrgUpgrade(path)
   echo l:ret
   if l:ret=~'upgrading .*'
     return a:path
-  elseif l:ret=~"Unable to" || l:ret=~'No metainfos'
-    echo l:ret
   endif
   return ''
 endfunction
@@ -83,7 +81,6 @@ function! s:Upgrade(input, rec)
   else
     let inputNice = substitute(a:input, '\s\s*', '', 'g')
     let exists = s:TestForBundle(inputNice)
-    let exists = s:TestForBundle(inputNice)
     if !exists
       echo "No plugin named ".inputNice." aborting upgrade"
       return
@@ -97,7 +94,7 @@ function! s:Upgrade(input, rec)
   let l:files=substitute(l:files,'^\s*$','','')
   if a:rec==0
     if l:files!=""
-      if exists("g:VizardryGitBaseDir") && 
+      if exists("g:VizardryGitBaseDir")
         execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Upgrade'].' '.l:files.'" '.l:files.' .gitmodules'
       else
         echo "Upgraded plugins: ".l:files
