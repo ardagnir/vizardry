@@ -9,7 +9,8 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
-+ Good submodule handeling for people having their vim config in a git repo see [submodules](https://github.com/dbeniamine#submodules)).
++ Good submodule handeling for people having their vim config in a git repo
+see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
 + Destruct command to actually remove a plugin.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
 
