@@ -9,13 +9,14 @@ automatically search github for the plugin you want and install it for you.
 ===============================================================================
 Why this fork ?                                               *Vizardry-Fork* ~
 
-This fork add a real submodule management to the original vizardry plugin
-from ardagnir (https://github.com/ardagnir/vizardry) for people having their
-vim config in a git repo.
+This fork add several nice features to the original vizardry plugin from ardagnir (https://github.com/ardagnir/vizardry):
 
-Moreover, `:Helptags` is called every time a sumodule is Invoked.
++ Good submodule handeling for people having their vim config in a git repo see |Vizardry-submodules|.
++ Destruct command to actually remove a plugin.
++ `:Helptags` is automatically called every time a sumodule is Invoked.
 
-How to use vizardry with submodules ?~
+===============================================================================
+How to use vizardry with submodules ?                  *Vizardry-Submodules* ~
 
 Set the following variables in your vimrc:
 >
@@ -31,8 +32,11 @@ plugin will always be happened in the end of the message, the proposed values
 are the defaults):
 
 >
-    let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
-    let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
+    let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
+          \'Banish': "[Vizardry] Banished vim submodule:",
+          \'Destruct': "[Vizardry] Destructed vim submodule:",
+          \}
+
 <
 
 Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
@@ -55,6 +59,7 @@ Basic Usage                                                  *Vizardry-usage* ~
 - Type :<b>Invoke</b> with no keywords to reload your plugins.
 - Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
 - Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
+- Type :<b>Destruct</b> &lt;samekeyword&gt; to remove definitively that plugin files.
 
 Additional Usage~
 
@@ -126,10 +131,10 @@ Use pathogen.
 <
 
 Notes:
-- Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must do it yourself.
+- Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must use the `Destruct` command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
-- If you want to use submodules instead of cloning, see |Vizardry-fork|
+- If you want to use submodules instead of cloning, see |Vizardry-Submodules|
 
 ===============================================================================
 License                                                    *Vizardry-License* ~

@@ -7,13 +7,13 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 
 ## <a name="Fork">Why this fork ?</a>
 
-This fork add a real submodule management to the [original vizardry plugin
-from ardagnir](https://github.com/ardagnir/vizardry) for people having their
-vim config in a git repo.
+This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
-Moreover, `:Helptags` is called every time a sumodule is Invoked.
++ Good submodule handeling for people having their vim config in a git repo see [submodules](https://github.com/ardagnir/dbeniamine#submodules)).
++ Destruct command to actually remove a plugin.
++ `:Helptags` is automatically called every time a sumodule is Invoked.
 
-### How to use vizardry with submodules ?
+### <a name="submodules">How to use vizardry with submodules ?</a>
 
 Set the following variables in your vimrc:
 
@@ -27,8 +27,10 @@ Optionnaly you can set the vim commit messages (the name of the modified
 plugin will always be happened in the end of the message, the proposed values
 are the defaults):
 
-    let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
-    let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
+    let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
+          \'Banish': "[Vizardry] Banished vim submodule:",
+          \'Destruct': "[Vizardry] Destructed vim submodule:",
+          \}
 
 Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
 updated and a minimal commit will be created.
@@ -38,22 +40,18 @@ updated and a minimal commit will be created.
 + Commits created by Vizardry are not automatically pushed.
 + The `.gitmodule` is included in each commit, do not use `Invoke` or `Bannish` if it contains some bad modifications.
 
-### Todo:
-
-+ Add a remove command
-
-
 ##Basic Usage
 - Type :<b>Invoke</b> with no keywords to reload your plugins.
 - Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
 - Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
+- Type :<b>Destruct</b> &lt;samekeyword&gt; to remove definitively that plugin files.
 
 ##Additional Usage
 - Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
 - Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
-- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/ardagnir/vizardry#magic) below.
+- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/dbeniamine/vizardry#magic) below.
 
 ##Examples
 Suppose you're in the middle of vimming and you have a sudden need to surround random words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim, vim-surround or vim-surround-plugin. Most importantly, you're lazy.
@@ -108,10 +106,12 @@ Use pathogen.
     git clone https://github.com/ardagnir/vizardry
 
 ##Notes
-- Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must do it yourself.
+- Vizardry banishes plugins by adding a tilde to the end of their directory
+  name. This stops pathogen from reading them. If you want to remove packages
+  completly, you must use the `Destruct` command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
-- If you want to use submodules instead of cloning, see See [Fork](https://github.com/ardagnir/vizardry#fork above
+- If you want to use submodules instead of cloning, see See [submodules](https://github.com/ardagnir/vizardry#submodules) above
 
 ##License
 Vizardry is licensed under the AGPL v3

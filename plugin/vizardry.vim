@@ -27,8 +27,12 @@ let g:loaded_vizardry = 1
 if !exists("g:VizardryGitMethod")
   let g:VizardryGitMethod = "clone"
 elseif (g:VizardryGitMethod =="submodule add")
-  let g:VizardryCommitMsg="[Vizardry] Invoked vim submodule:"
-  let g:VizardryCommitRmMsg="[Vizardry] Bannished vim submodule:"
+  if !exists("g:VizardryCommitMsgs")
+    let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
+          \'Banish': "[Vizardry] Banished vim submodule:",
+          \'Destruct': "[Vizardry] Destructed vim submodule:",
+          \}
+  endif
   if !exists("g:VizardryGitBaseDir")
     echo "g:VizardryGitBaseDir must be set when VizardryGitMethod is submodule"
     echo "Vizardry not loaded"
@@ -38,7 +42,8 @@ elseif (g:VizardryGitMethod =="submodule add")
 endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
+command! -nargs=? -complete=custom,s:ListAllInvoked Destruct call s:Banish(<q-args>, 'Destruct')
 command! -nargs=? -complete=custom,s:ListAllBanished Unbanish call s:UnbanishCommand(<q-args>)
 command! -nargs=? Scry call s:Scry(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magic call s:Magic(<q-args>)
@@ -144,7 +149,7 @@ endfunction
 
 function! s:Unbanish(bundle, reload)
   if exists("g:VizardryGitBaseDir")
-    let l:commit=' && git commit -m "'.g:VizardryCommitMsg.' '.a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
     let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.a:bundle.'~ '.s:relativeBundleDir.'/'.a:bundle.l:commit
   else
     let l:cmd='mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle
@@ -192,7 +197,7 @@ endfunction
 function! s:GrabRepository(site, name)
   if exists("g:VizardryGitBaseDir")
     let l:basedir=g:VizardryGitBaseDir
-    let l:commit=' && git commit -m "'.g:VizardryCommitMsg.' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
   else
     let l:commit=''
     let l:basedir='$HOME'
@@ -271,7 +276,7 @@ function! s:FormValidBundle(bundle)
     return a:bundle.counter
 endfunction
 
-function! s:Banish(input)
+function! s:Banish(input, type)
   if a:input == ''
     echo 'Banish what?'
     return
@@ -288,15 +293,24 @@ function! s:Banish(input)
     let matchList = split(matches,'\n')
     for aMatch in matchList
       if exists("g:VizardryGitBaseDir")
-        let l:commit=' && git commit -m "'.g:VizardryCommitRmMsg.' '.aMatch.'" '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~ .gitmodules'
-        let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~'.l:commit
+        let l:commit=' && git commit -m "'.g:VizardryCommitMsgs[a:type].' '.aMatch.'" '.s:relativeBundleDir.'/'.aMatch.' .gitmodules'
+        if a:type== 'Banish'
+          let l:commit.=' '.s:relativeBundleDir.'/'.aMatch.'~'
+          let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~'.l:commit
+        else
+          let l:cmd='cd '.g:VizardryGitBaseDir.' && git submodule deinit '.s:relativeBundleDir.'/'.aMatch.' && git rm -rf '.s:relativeBundleDir.'/'.aMatch.l:commit
+        endif
       else
-        let l:cmd='mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null'
+        if a:type== 'Banish'
+          let l:cmd='mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null'
+        else
+          let l:cmd='rm -rf '.s:bundleDir.'/'.aMatch.' >/dev/null'
+        endif
       endif
       let error=system(l:cmd)
       call s:BanishMagic(aMatch)
       if error==''
-        echo "Banished ".aMatch
+        echo a:type.'ed '.aMatch
       else
         let error = strpart(error, 0, strlen(error)-1)
         echo "Error renaming file: ".error
@@ -484,3 +498,4 @@ endfunction
 
 let &cpo = g:save_cpo
 unlet g:save_cpo
+" vim:set et sw=2:
