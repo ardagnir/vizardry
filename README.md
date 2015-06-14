@@ -9,7 +9,7 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatic
 
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
-+ Good submodule handeling for people having their vim config in a git repo see [submodules](https://github.com/ardagnir/dbeniamine#submodules)).
++ Good submodule handeling for people having their vim config in a git repo see [submodules](https://github.com/dbeniamine#submodules)).
 + Destruct command to actually remove a plugin.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
 
@@ -103,7 +103,7 @@ Just as easy.
 Use pathogen.
 
     cd ~/.vim/bundle
-    git clone https://github.com/ardagnir/vizardry
+    git clone https://github.com/dbeniamine/vizardry
 
 ##Notes
 - Vizardry banishes plugins by adding a tilde to the end of their directory
@@ -111,7 +111,7 @@ Use pathogen.
   completly, you must use the `Destruct` command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
-- If you want to use submodules instead of cloning, see See [submodules](https://github.com/ardagnir/vizardry#submodules) above
+- If you want to use submodules instead of cloning, see See [submodules](https://github.com/dbeniamine/vizardry#submodules) above
 
 ##License
 Vizardry is licensed under the AGPL v3
