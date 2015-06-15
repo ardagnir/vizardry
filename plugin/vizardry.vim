@@ -119,7 +119,7 @@ function! s:Invoke(input)
   endif
 
   let inputNumber = str2nr(a:input)
-  if inputNumber!=0 && inputNumber len(s:siteList) || a:input=="0"
+  if inputNumber!=0 && inputNumber < len(s:siteList) || a:input=="0"
     let site=s:siteList[inputNumber]
     let description=s:descriptionList[inputNumber]
     echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
@@ -269,7 +269,7 @@ function! s:HandleInvokePrompt(site, description, inputNice)
   let valid = 0
   let inputNice = s:FormValidBundle(a:inputNice)
   while valid == 0
-    let response = s:GetResponseFromPrompt("Found ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename)", ['y','n','r'])
+    let response = s:GetResponseFromPrompt("Found ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename/DisplayMore)", ['y','n','r','d'])
     if response == 'y'
       call s:GrabRepository(a:site, inputNice)
       call s:ReloadScripts()
@@ -303,6 +303,10 @@ function! s:HandleInvokePrompt(site, description, inputNice)
       endif
     elseif response == 'n'
       let valid = 1
+    elseif response == 'd'
+      echo "Retrieving README"
+      let readme=system('curl -silent https://github.com/'.a:site.' |'.s:VizardryReadmeExtractor)
+      echo readme
     endif
   endwhile
   redraw
@@ -489,6 +493,7 @@ endfunction
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
 let s:UpgradeVimOrgPath = s:scriptDir.'/UpgradeVimOrgPlugins.sh'
+let s:VizardryReadmeExtractor = s:scriptDir.'/ReadmeExtractor.sh'
 let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
 let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
 

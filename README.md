@@ -12,10 +12,12 @@ In 2015 you can even upgrade plugins from any git repo or vim.org using [:Upgrad
 
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
-+ Destruct command to actually remove a plugin.
-+ Upgrade command to upgrade one or every plugins see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
++ `Destruct` command to actually remove a plugin.
++ `Upgrade` command to upgrade one or every plugins see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
 + Good submodule handeling for people having their vim config in a git repo
 see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
++ Retrieve the README.md file while using `:Invoke`
++ Set the lenght of `Scry` results list.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
 
 ### <a name="submodules">How to use vizardry with submodules ?</a>
@@ -74,10 +76,12 @@ Vizardry will pop up a prompt saying:
     Found tpope/vim-surround
     (surround.vim: quoting/parenthesizing made simple)
 
-    Clone as "surround"? (Yes/No/Rename)
+    Clone as "surround"? (Yes/No/Rename/DisplayMore)
 
-Press Y and you can immediately start surrounding things. It's that easy.
-<br><br><br>
+Press Y and you can immediately start surrounding things.  You can also take a
+look at the README.md directly in vim by hitting 'd'.  It's that easy.
+
+
 Even plugins with vague or silly names can be found with vizardry. Imagine you're running multiple instances of vim and need a package to sync registers.
 
 Type:
@@ -103,7 +107,7 @@ A metainfos file contains two lines
 1. The url of the vimscript
 2. The version number (0 to initialize the synchronization)
 
-`atool` is required for upgrading sripts from vim.org
+**Note:** `atool` is required for upgrading sripts from vim.org
 
 ##Magic
   Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
@@ -118,7 +122,9 @@ A metainfos file contains two lines
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
 
-+ `atool` is required for upgrading sripts from vim.org
++ [pandoc](http://pandoc.org/) is recommended to display README.md files.
+
++ [atool](http://freecode.com/projects/atool) is required for upgrading sripts from vim.org.
 
 - You will probably have issues if you use a Windows OS.
 
@@ -133,7 +139,6 @@ Use pathogen.
   name. This stops pathogen from reading them. If you want to remove packages
   completly, you must use the `Destruct` command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
-- Vizardry currently has no way of updating packages. That should change soon, but until then, you'll have to update them from the shell.
 - If you want to use submodules instead of cloning, see See [submodules](https://github.com/dbeniamine/vizardry#submodules) above
 
 ##License
