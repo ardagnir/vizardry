@@ -122,8 +122,6 @@ A metainfos file contains two lines
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
 
-+ [pandoc](http://pandoc.org/) is recommended to display README.md files.
-
 + [atool](http://freecode.com/projects/atool) is required for upgrading sripts from vim.org.
 
 - You will probably have issues if you use a Windows OS.

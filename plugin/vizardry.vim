@@ -305,7 +305,9 @@ function! s:HandleInvokePrompt(site, description, inputNice)
       let valid = 1
     elseif response == 'd'
       echo "Retrieving README"
-      let readme=system('curl -silent https://github.com/'.a:site.' |'.s:VizardryReadmeExtractor)
+      let readmeurl=system('curl -silent https://api.github.com/repos/'.a:site.'/readme | grep download_url')
+      let readmeurl=substitute(readmeurl,'\s*"download_url"[^"]*"\(.*\)",.*','\1','')
+      let readme=system('curl -silent '.readmeurl.' | sed "1,/^$/ d"')
       echo readme
     endif
   endwhile
@@ -493,7 +495,6 @@ endfunction
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
 let s:UpgradeVimOrgPath = s:scriptDir.'/UpgradeVimOrgPlugins.sh'
-let s:VizardryReadmeExtractor = s:scriptDir.'/ReadmeExtractor.sh'
 let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
 let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
 
