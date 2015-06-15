@@ -308,6 +308,8 @@ function! s:HandleInvokePrompt(site, description, inputNice)
       let readmeurl=system('curl -silent https://api.github.com/repos/'.a:site.'/readme | grep download_url')
       let readmeurl=substitute(readmeurl,'\s*"download_url"[^"]*"\(.*\)",.*','\1','')
       let readme=system('curl -silent '.readmeurl.' | sed "1,/^$/ d"')
+      redraw
+      echo ""
       echo readme
     endif
   endwhile
