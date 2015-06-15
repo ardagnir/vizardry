@@ -3,7 +3,7 @@
 Remember back in the dark ages of 2013? When you had to search for vim plugins
 like a wild animal, using your browser?
 
-In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will
+In 2014, you can just type ":Invoke <keyword>" and vizardry will
 automatically search github for the plugin you want and install it for you.
 
 In 2015 you can even upgrade plugins from any git repo or vim.org using
@@ -61,19 +61,22 @@ Notes:
 ===============================================================================
 Basic Usage                                                  *Vizardry-usage* ~
 
-- Type :<b>Invoke</b> with no keywords to reload your plugins.
-- Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
-- Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
-- Type :<b>Destruct</b> &lt;samekeyword&gt; to remove definitively that plugin files.
-- Type :<b>Upgrade</b>  [samekeyword] to upgrade one or every plugns see |Vizardry-Upgrade|
+- Type :Invoke with no keywords to reload your plugins.
+- Type :Invoke <keyword> and hit yes to install a plugin and reload.
+- Type :Banish <samekeyword> to remove that plugin from pathogen. You will have to restart vim to see the effect.
+- Type :Destruct <samekeyword> to remove definitively that plugin files.
+- Type :Upgrade  [samekeyword] to upgrade one or every plugns see |Vizardry-Upgrade|
 
 Additional Usage~
 
-- Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
-- Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
-- Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
-- Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
-- Type :<b>Magic</b> to manage global and plugin-specific settings. See |Vizardry-Magic| below.
+- Type :Unbanish <keyword> to reverse a banish.
+- Type :Scry with no keywards to list all invoked and banished plugins.
+- Type :Scry <keyword> to search github for a script and output
+  top N results. The number of displayed results can be set by adding `let
+  g:VizardryNbScryResults=25` to your vimrc. Default is 10.
+- Type :Invoke <number> to install the plugin with that number from the last scry.
+- Type :Invoke <number> to install the plugin with that number from the last scry.
+- Type :Magic to manage global and plugin-specific settings. See |Vizardry-Magic| below.
 
 Examples ~
 
@@ -126,9 +129,9 @@ Magic                                                        *Vizardry-Magic* ~
 
   Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
 
-- Type :<b>Magic</b> * &lt;magic words&gt; and add thse words to a file that acts similarly to your vimrc.
-- Type :<b>Magic</b> &lt;plugin&gt; &lt;magic words&gt; to add plugin-specific globals and settings. These are only used when that plugin isn't banished.
-- Type :<b>Magic{edit/split/vsplit}</b> &lt;plugin&gt; to edit/split/vsplit the magic file for that plugin.
+- Type :Magic * <magic words> and add thse words to a file that acts similarly to your vimrc.
+- Type :Magic <plugin> <magic words> to add plugin-specific globals and settings. These are only used when that plugin isn't banished.
+- Type :Magic{edit/split/vsplit} <plugin> to edit/split/vsplit the magic file for that plugin.
 
 
 ===============================================================================

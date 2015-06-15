@@ -56,7 +56,8 @@ updated and a minimal commit will be created.
 ##Additional Usage
 - Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
 - Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
-- Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output the top 10 results.
+- Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output 
+top N results. The number of displayed results can be set by adding `let g:VizardryNbScryResults=25` to your vimrc. Default is 10.
 - Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
 - Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/dbeniamine/vizardry#magic) below.
 

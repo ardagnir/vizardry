@@ -42,6 +42,10 @@ elseif (g:VizardryGitMethod =="submodule add")
   endif
 endif
 
+if !exists("g:VizardryNbScryResults")
+  let g:VizardryNbScryResults=10
+endif
+
 command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
 command! -nargs=? -complete=custom,s:ListAllInvoked Destruct call s:Banish(<q-args>, 'Destruct')
@@ -115,7 +119,7 @@ function! s:Invoke(input)
   endif
 
   let inputNumber = str2nr(a:input)
-  if inputNumber!=0 && inputNumber<10 || a:input=="0"
+  if inputNumber!=0 && inputNumber len(s:siteList) || a:input=="0"
     let site=s:siteList[inputNumber]
     let description=s:descriptionList[inputNumber]
     echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
@@ -386,11 +390,11 @@ function! s:Scry(input)
     redraw
     echo "Searching..."
     let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
-    let site = system('grep "full_name" | head -n 10', curlResults)
+    let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
     let s:siteList = split(site, '\n')
 
-    let description = system('grep "description" | head -n 10', curlResults)
+    let description = system('grep "description" | head -n '.g:VizardryNbScryResults, curlResults)
     let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*', '\1', 'g') "this includes escaped quotes
     let description = substitute(description, '\\"', '"', 'g')
     let s:descriptionList = split(description, '\n')
