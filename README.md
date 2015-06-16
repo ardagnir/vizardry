@@ -101,7 +101,7 @@ Vizardry will prompt you with:
 
 Just as easy.
 
-##  Upgrade
+##  Evolve
 
 The `Evolve` command is able to upgrade any plugin instaled from a git
 repository or vim.org.
