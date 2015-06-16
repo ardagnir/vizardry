@@ -30,8 +30,8 @@ elseif (g:VizardryGitMethod =="submodule add")
   if !exists("g:VizardryCommitMsgs")
     let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
           \'Banish': "[Vizardry] Banished vim submodule:",
-          \'Destruct': "[Vizardry] Destructed vim submodule:",
-          \'Upgrade': "[Vizardry] Upgraded vim submodule:",
+          \'Vanish': "[Vizardry] Vanished vim submodule:",
+          \'Evolve': "[Vizardry] Evolved vim submodule:",
           \}
   endif
   if !exists("g:VizardryGitBaseDir")
@@ -52,16 +52,16 @@ endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
-command! -nargs=? -complete=custom,s:ListAllInvoked Destruct call s:Banish(<q-args>, 'Destruct')
+command! -nargs=? -complete=custom,s:ListAllInvoked Vanish call s:Banish(<q-args>, 'Vanish')
 command! -nargs=? -complete=custom,s:ListAllBanished Unbanish call s:UnbanishCommand(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllBanished Upgrade call s:Upgrade(<q-args>,0)
+command! -nargs=? -complete=custom,s:ListAllBanished Evolve call s:Evolve(<q-args>,0)
 command! -nargs=? Scry call s:Scry(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magic call s:Magic(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicedit call s:MagicEdit(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicsplit call s:MagicSplit(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Magicvsplit call s:MagicVSplit(<q-args>)
 
-function s:GitUpgrade(path)
+function s:GitEvolve(path)
   let l:ret=system('cd '.a:path.' && git pull origin master')
   echo l:ret
   if l:ret=~'Already up-to-date'
@@ -70,8 +70,8 @@ function s:GitUpgrade(path)
   return a:path
 endfunction
 
-function s:VimOrgUpgrade(path)
-  let l:ret=system(s:UpgradeVimOrgPath.' '.a:path)
+function s:VimOrgEvolve(path)
+  let l:ret=system(s:EvolveVimOrgPath.' '.a:path)
   echo l:ret
   if l:ret=~'upgrading .*'
     return a:path
@@ -79,12 +79,12 @@ function s:VimOrgUpgrade(path)
   return ''
 endfunction
 
-function! s:Upgrade(input, rec)
+function! s:Evolve(input, rec)
   if a:input==""
     let invokedList = split(s:ListInvoked('*'),'\n')
     let l:files=''
     for plug in invokedList
-      let l:files.=' '.s:Upgrade(plug,1)
+      let l:files.=' '.s:Evolve(plug,1)
     endfor
   else
     let inputNice = substitute(a:input, '\s\s*', '', 'g')
@@ -94,18 +94,18 @@ function! s:Upgrade(input, rec)
       return
     endif
     if glob(s:bundleDir.'/'.inputNice.'/.git')!=""
-      let l:files=s:GitUpgrade(s:bundleDir.'/'.inputNice)
+      let l:files=s:GitEvolve(s:bundleDir.'/'.inputNice)
     else
-      let l:files=s:VimOrgUpgrade(s:bundleDir.'/'.inputNice)
+      let l:files=s:VimOrgEvolve(s:bundleDir.'/'.inputNice)
     endif
   endif
   let l:files=substitute(l:files,'^\s*$','','')
   if a:rec==0
     if l:files!=""
       if exists("g:VizardryGitBaseDir")
-        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Upgrade'].' '.l:files.'" '.l:files.' .gitmodules'
+        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Evolve'].' '.l:files.'" '.l:files.' .gitmodules'
       else
-        echo "Upgraded plugins: ".l:files
+        echo "Evolved plugins: ".l:files
       endif
     else
       echo "No plugin upgraded"
@@ -498,7 +498,7 @@ endfunction
 
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
-let s:UpgradeVimOrgPath = s:scriptDir.'/UpgradeVimOrgPlugins.sh'
+let s:EvolveVimOrgPath = s:scriptDir.'/EvolveVimOrgPlugins.sh'
 let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
 let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
 

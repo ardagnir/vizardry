@@ -7,15 +7,15 @@ In 2014, you can just type ":Invoke <keyword>" and vizardry will
 automatically search github for the plugin you want and install it for you.
 
 In 2015 you can even upgrade plugins from any git repo or vim.org using
-:Upgrade |Vizardry-Upgrade|.
+|:Evolve| |Vizardry-Upgrade|.
 
 ===============================================================================
 Why this fork ?                                               *Vizardry-Fork* ~
 
 This fork add several nice features to the original vizardry plugin from ardagnir (https://github.com/ardagnir/vizardry):
 
-+ `Destruct` command to actually remove a plugin.
-+ `Upgrade` command to upgrade one or every plugins see |Vizardry-Upgrade|.
++ |:Vanish| command to actually remove a plugin.
++ |:Evolve| command to upgrade one or every plugins.
 + Good submodule handeling for people having their vim config in a git repo see |Vizardry-submodules|.
 + Retrieve the README.md file while using `:Invoke`
 + Set the lenght of `Scry` results list.
@@ -40,8 +40,8 @@ are the defaults):
 >
     let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
           \'Banish': "[Vizardry] Banished vim submodule:",
-          \'Destruct': "[Vizardry] Destructed vim submodule:",
-          \'Upgrade': "[Vizardry] Upgraded vim submodule:",
+          \'Vanish': "[Vizardry] Vanished vim submodule:",
+          \'Evolve': "[Vizardry] Evolved vim submodule:",
           \}
 
 <
@@ -63,16 +63,16 @@ Notes:
 ===============================================================================
 Basic Usage                                                  *Vizardry-usage* ~
 
-- Type :Invoke with no keywords to reload your plugins.
-- Type :Invoke <keyword> and hit yes to install a plugin and reload.
-- Type :Banish <samekeyword> to remove that plugin from pathogen. You will have to restart vim to see the effect.
-- Type :Destruct <samekeyword> to remove definitively that plugin files.
-- Type :Upgrade  [samekeyword] to upgrade one or every plugns see |Vizardry-Upgrade|
+- Type `:Invoke` with no keywords to reload your plugins.               *:Invoke*
+- Type `:Invoke` <keyword> and hit yes to install a plugin and reload.
+- Type `:Banish` <samekeyword> to remove that plugin from pathogen. You will have to restart vim to see the effect. *:Banish*
+- Type `:Vanish` <samekeyword> to remove definitively that plugin files. *:Vanish*
+- Type |:Evolve|  [samekeyword] to upgrade one or every plugins.
 
-Additional Usage~
+Additional Usage                                           *Vizardry-avanced* ~
 
-- Type :Unbanish <keyword> to reverse a banish.
-- Type :Scry with no keywards to list all invoked and banished plugins.
+- Type :Unbanish <keyword> to reverse a banish.                     *:Unbanish*
+- Type :Scry with no keywards to list all invoked and banished plugins. *:Scry*
 - Type :Scry <keyword> to search github for a script and output
   top N results. The number of displayed results can be set by adding `let
   g:VizardryNbScryResults=25` to your vimrc. Default is 10.
@@ -80,7 +80,7 @@ Additional Usage~
 - Type :Invoke <number> to install the plugin with that number from the last scry.
 - Type :Magic to manage global and plugin-specific settings. See |Vizardry-Magic| below.
 
-Examples ~
+Examples                                                  *Vizardry-examples* ~
 
 Suppose you're in the middle of vimming and you have a sudden need to surround random words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim, vim-surround or vim-surround-plugin. Most importantly, you're lazy.
 
@@ -120,10 +120,14 @@ Vizardry will prompt you with:
 Just as easy.
 
 ===============================================================================
-Upgrade                                                    *Vizardry-Upgrade* ~
+Evolve                                                    *:Evolve* ~
 
-The ugrade function is able to upgrade any plugin instaled from a git
-repository or vim.org.
+The `:Evolve` command is able to upgrade any plugin instaled from a git
+repository or vim.org:
+>
+    :Evolve [keyword]           If keywod is a plugin name, upgrade it. If no
+                                keyword is given, upgrade every plugins.
+<
 
 To upgrade plugins from vim.org, you need to add a metainfos file.
 A metainfos file contains two lines
@@ -163,7 +167,7 @@ Use pathogen.
 <
 
 Notes:
-- Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must use the `Destruct` command.
+- Vizardry banishes plugins by adding a tilde to the end of their directory name. This stops pathogen from reading them. If you want to remove packages completly, you must use the |:Vanish| command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - If you want to use submodules instead of cloning, see |Vizardry-Submodules|
 

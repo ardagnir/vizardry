@@ -5,15 +5,15 @@ Remember back in the dark ages of 2013? When you had to search for vim plugins l
 
 In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
-In 2015 you can even upgrade plugins from any git repo or vim.org using [:Upgrade](https://github.com/dbeniamine/vizardry#upgrade).
+In 2015 you can even upgrade plugins from any git repo or vim.org using [:Evolve](https://github.com/dbeniamine/vizardry#evolve).
 
 
 ## <a name="Fork">Why this fork ?</a>
 
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
-+ `Destruct` command to actually remove a plugin.
-+ `Upgrade` command to upgrade one or every plugins see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
++ `Vanish` command to actually remove a plugin.
++ `Evolve` command to upgrade one or every plugins see [Evolve](https://github.com/dbeniamine/vizardry#evolve).
 + Good submodule handeling for people having their vim config in a git repo
 see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
 + Retrieve the README.md file while using `:Invoke`.
@@ -36,8 +36,8 @@ are the defaults):
 
     let g:VizardryCommitMsgs={'Invoke': "[Vizardry] Invoked vim submodule:",
           \'Banish': "[Vizardry] Banished vim submodule:",
-          \'Destruct': "[Vizardry] Destructed vim submodule:",
-          \'Upgrade': "[Vizardry] Upgraded vim submodule:",
+          \'Vanish': "[Vizardry] Vanished vim submodule:",
+          \'Evolve': "[Vizardry] Evolved vim submodule:",
           \}
 
 Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
@@ -52,8 +52,8 @@ updated and a minimal commit will be created.
 - Type :<b>Invoke</b> with no keywords to reload your plugins.
 - Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
 - Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
-- Type :<b>Destruct</b> &lt;samekeyword&gt; to remove definitively that plugin files.
-- Type :<b>Upgrade</b>  \[samekeyword\] to upgrade one or every plugns see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
+- Type :<b>Vanish</b> &lt;samekeyword&gt; to remove definitively that plugin files.
+- Type :<b>Evolve</b>  \[samekeyword\] to upgrade one or every plugns see [Evolve](https://github.com/dbeniamine/vizardry#evolve).
 
 ##Additional Usage
 - Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
@@ -101,9 +101,9 @@ Vizardry will prompt you with:
 
 Just as easy.
 
-## Upgrade
+##  Upgrade
 
-The ugrade function is able to upgrade any plugin instaled from a git
+The `Evolve` command is able to upgrade any plugin instaled from a git
 repository or vim.org.
 
 To upgrade plugins from vim.org, you need to add a metainfos file.
@@ -139,7 +139,7 @@ Use pathogen.
 ##Notes
 - Vizardry banishes plugins by adding a tilde to the end of their directory
   name. This stops pathogen from reading them. If you want to remove packages
-  completly, you must use the `Destruct` command.
+  completly, you must use the `Vanish` command.
 - Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
 - If you want to use submodules instead of cloning, see See [submodules](https://github.com/dbeniamine/vizardry#submodules) above
 
