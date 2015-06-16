@@ -16,7 +16,7 @@ This fork add several nice features to the [original vizardry plugin from ardagn
 + `Upgrade` command to upgrade one or every plugins see [upgrade](https://github.com/dbeniamine/vizardry#upgrade).
 + Good submodule handeling for people having their vim config in a git repo
 see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
-+ Retrieve the README.md file while using `:Invoke`
++ Retrieve the README.md file while using `:Invoke`.
 + Set the lenght of `Scry` results list.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
 
@@ -81,6 +81,10 @@ Vizardry will pop up a prompt saying:
 Press Y and you can immediately start surrounding things.  You can also take a
 look at the README.md directly in vim by hitting 'd'.  It's that easy.
 
+The readme file is piped to vim, you can configure the viewing command by
+adding (an modifiying) the following line to your vimrc:
+
+    let g:VizardryReadmeReader='view -c "set ft=markdown" -'
 
 Even plugins with vague or silly names can be found with vizardry. Imagine you're running multiple instances of vim and need a package to sync registers.
 

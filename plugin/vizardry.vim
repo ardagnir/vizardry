@@ -46,6 +46,10 @@ if !exists("g:VizardryNbScryResults")
   let g:VizardryNbScryResults=10
 endif
 
+if !exists("g:VizardryReadmeReader")
+  let g:VizardryReadmeReader='view -c "set ft=markdown" -'
+endif
+
 command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
 command! -nargs=? -complete=custom,s:ListAllInvoked Destruct call s:Banish(<q-args>, 'Destruct')
@@ -304,13 +308,11 @@ function! s:HandleInvokePrompt(site, description, inputNice)
     elseif response == 'n'
       let valid = 1
     elseif response == 'd'
-      echo "Retrieving README"
+      echo "Looking for README url"
       let readmeurl=system('curl -silent https://api.github.com/repos/'.a:site.'/readme | grep download_url')
       let readmeurl=substitute(readmeurl,'\s*"download_url"[^"]*"\(.*\)",.*','\1','')
-      let readme=system('curl -silent '.readmeurl.' | sed "1,/^$/ d"')
-      redraw
-      echo ""
-      echo readme
+      echo "Retrieving README"
+      execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.g:VizardryReadmeReader
     endif
   endwhile
   redraw

@@ -99,6 +99,11 @@ Vizardry will pop up a prompt saying:
 Press Y and you can immediately start surrounding things.  You can also take a
 look at the README.md directly in vim by hitting 'd'.  It's that easy.
 
+The readme file is piped to vim, you can configure the viewing command by
+adding (an modifiying) the following line to your vimrc:
+>
+    let g:VizardryReadmeReader='view -c "set ft=markdown" -'
+<
 Even plugins with vague or silly names can be found with vizardry. Imagine you're running multiple instances of vim and need a package to sync registers.
 
 Type:
