@@ -102,8 +102,9 @@ function! s:Evolve(input, rec)
   let l:files=substitute(l:files,'^\s*$','','')
   if a:rec==0
     if l:files!=""
+      let l:basefiles=substitute(substitute(l:files,s:bundleDir.'/','','g'),'\s\s*', ' ','g')
       if exists("g:VizardryGitBaseDir")
-        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Evolve'].' '.l:files.'" '.l:files.' .gitmodules'
+        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Evolve'].' '.l:basefiles.'" '.l:files.' .gitmodules'
       else
         echo "Evolved plugins: ".l:files
       endif
