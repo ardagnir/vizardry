@@ -369,7 +369,7 @@ function! s:Banish(input, type)
           let l:commit.=' '.s:relativeBundleDir.'/'.aMatch.'~'
           let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~'.l:commit
         else
-          let l:cmd='cd '.g:VizardryGitBaseDir.' && git submodule deinit '.s:relativeBundleDir.'/'.aMatch.' && git rm -rf '.s:relativeBundleDir.'/'.aMatch.l:commit
+          let l:cmd='cd '.g:VizardryGitBaseDir.' && git submodule deinit -f '.s:relativeBundleDir.'/'.aMatch.' && git rm -rf '.s:relativeBundleDir.'/'.aMatch.l:commit
         endif
       else
         if a:type== 'Banish'
