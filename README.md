@@ -28,7 +28,7 @@ Set the following variables in your vimrc:
     let g:VizardryGitMethod="submodule add"
     let g:VizardryGitBaseDir="/path/to/your/git/repo"
 
-The second variable ** must be** the root of the repo containing your vim
+The second variable **must be** the root of the repo containing your vim
 files.
 
 Optionally you can set the vim commit messages (the name of the modified
@@ -68,7 +68,7 @@ or `:Vanish` if it contains some bad modifications.
 
     + If no arguments is specified, reload your plugins.
     + If the argument is a number, ask to install the plugin with that
-        number from the last |:Scry| or Invoke.
+        number from the last `:Scry` or Invoke.
     + If the argument is a keyword, search github for a plugin matching
     this keyword and ask for install.
 
@@ -83,7 +83,7 @@ or `:Vanish` if it contains some bad modifications.
 
     Vizardry will pop up a prompt saying:
 
-        Result 1/20 tpope/vim-surround
+        Result 1/20: tpope/vim-surround
         (surround.vim: quoting/parenthesizing made simple)
 
         Clone as "surround"? (Yes/Rename/DisplayMore/Next/Previous/Abort)
@@ -107,7 +107,7 @@ or `:Vanish` if it contains some bad modifications.
 
     Vizardry will prompt you with:
 
-        Result 1/3 ardagnir/united-front
+        Result 1/3: ardagnir/united-front
         (Automatically syncs registers between vim instances)
 
         Clone as "syncregisters"? (Yes/Rename/DisplayMore/Next/Previous/Abort)
@@ -138,7 +138,7 @@ or `:Vanish` if it contains some bad modifications.
 
         git pull origin master
 
-    |:Evolve| is also able to upgrade plugin downloaded from vim.org, to do so,
+    `:Evolve` is also able to upgrade plugin downloaded from vim.org, to do so,
     you need to create a `.metainfos` file at the root of the plugin directory
     (not yout bundle directory). Such a file is composed of two lines:
 

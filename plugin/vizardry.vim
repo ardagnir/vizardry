@@ -261,7 +261,7 @@ function! s:HandleInvokePrompt(site, description, inputNice, index)
   let ret=-1
   let idx=a:index+1
   while valid == 0
-    let response = s:GetResponseFromPrompt("Result ".idx."/".len(s:siteList)." ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)", ['y','r','d','n','p','a'])
+    let response = s:GetResponseFromPrompt("Result ".idx."/".len(s:siteList).": ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)", ['y','r','d','n','p','a'])
     if response == 'y'
       call s:GrabRepository(a:site, inputNice)
       call s:ReloadScripts()
