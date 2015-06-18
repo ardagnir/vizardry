@@ -125,8 +125,7 @@ function! s:Invoke(input)
 
   let inputNumber = str2nr(a:input)
   if inputNumber!=0 && inputNumber < len(s:siteList) || a:input=="0"
-    let site=s:siteList[inputNumber]
-    let description=s:descriptionList[inputNumber]
+    let l:index=inputNumber
     echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
     let inputNice = substitute(s:lastScry, '\s\s*', '', 'g')
   else
@@ -139,54 +138,40 @@ function! s:Invoke(input)
         return
       endif
     endif
-    "let banished = s:TestForBundle(inputNice.'~')
-    "if banished
-    "if s:GetResponseFromPrompt("Unbanish ".inputNice."? (y/n)", ['y', 'n']) == 'y'
-    "call s:Unbanish(inputNice)
-    "endif
-    "endif
-    redraw
-    echo "Searching..."
-    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.inputPlus.'\&sort=stars\&order=desc')
-
-    let site = system('grep "full_name" | head -n 1', curlResults)
-
-    if site==""
-      echo '"'.a:input.'" not found'
-      return
-    endif
-    let site = substitute(site, '\s*"full_name"[^"]*"\(.*\)".*', '\1', '')
-
-    let description = system('grep "description" | head -n 1', curlResults)
-    let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)".*', '\1', '') "this includes escaped quotes
-    let description = substitute(description, '\\"', '"', 'g')
+    call s:InitLists(inputPlus)
+    let l:index=0
   endif
 
+  while( l:index >= 0 && l:index < len(s:siteList))
+    let site=s:siteList[l:index]
+    let description=s:descriptionList[l:index]
   let matchingBundle = s:TestRepository(site)
-  if matchingBundle != ""
-    echo 'Found '.site
-    echo '('.description.')'
-    if(matchingBundle[len(matchingBundle)-1] == '~')
-      let matchingBundle = strpart(matchingBundle, 0, strlen(matchingBundle)-1)
-      echohl WarningMsg
-      echo 'This is the repository for banished bundle "'.matchingBundle.'"'
-      echohl None
-      if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
-        call s:Unbanish(matchingBundle, 1)
-        execute ':Helptags'
+    if matchingBundle != ""
+      echo 'Found '.site
+      echo '('.description.')'
+      if(matchingBundle[len(matchingBundle)-1] == '~')
+        let matchingBundle = strpart(matchingBundle, 0, strlen(matchingBundle)-1)
+        echohl WarningMsg
+        echo 'This is the repository for banished bundle "'.matchingBundle.'"'
+        echohl None
+        if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
+          call s:Unbanish(matchingBundle, 1)
+          execute ':Helptags'
+        endif
+        redraw
+        echo ""
+      else
+        echohl WarningMsg
+        echo 'This has already been invoked as "'.matchingBundle.'"'
+        echohl None
       endif
+      return
+    else
+      let l:index=s:HandleInvokePrompt(site, description, inputNice,index)
       redraw
       echo ""
-    else
-      echohl WarningMsg
-      echo 'This has already been invoked as "'.matchingBundle.'"'
-      echohl None
     endif
-  else
-    call s:HandleInvokePrompt(site, description, inputNice)
-    redraw
-    echo ""
-  endif
+  endwhile
 endfunction
 
 function! s:UnbanishCommand(bundle)
@@ -270,11 +255,13 @@ function! s:GrabRepository(site, name)
   execute ':!cd '.l:basedir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.s:relativeBundleDir.'/'.a:name.l:commit
 endfunction
 
-function! s:HandleInvokePrompt(site, description, inputNice)
+function! s:HandleInvokePrompt(site, description, inputNice, index)
   let valid = 0
   let inputNice = s:FormValidBundle(a:inputNice)
+  let ret=-1
+  let idx=a:index+1
   while valid == 0
-    let response = s:GetResponseFromPrompt("Found ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/No/Rename/DisplayMore)", ['y','n','r','d'])
+    let response = s:GetResponseFromPrompt("Result ".idx."/".len(s:siteList)." ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)", ['y','r','d','n','p','a'])
     if response == 'y'
       call s:GrabRepository(a:site, inputNice)
       call s:ReloadScripts()
@@ -302,22 +289,34 @@ function! s:HandleInvokePrompt(site, description, inputNice)
         echo "Name already taken"
       else
         call s:GrabRepository(a:site, newName)
-        execute ':Helptags'
         call s:ReloadScripts()
         let valid = 1
       endif
     elseif response == 'n'
+      let ret=a:index+1
       let valid = 1
     elseif response == 'd'
       echo "Looking for README url"
       let readmeurl=system('curl -silent https://api.github.com/repos/'.a:site.'/readme | grep download_url')
       let readmeurl=substitute(readmeurl,'\s*"download_url"[^"]*"\(.*\)",.*','\1','')
       echo "Retrieving README"
-      execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.g:VizardryReadmeReader
+      if readmeurl == ""
+        echohl WarningMsg
+        echo "No readme found"
+        echohl None
+      else
+        execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.g:VizardryReadmeReader
+      endif
+    elseif response == 'a'
+      let valid=1
+    elseif response == 'p'
+      let ret=a:index-1
+      let valid=1
     endif
   endwhile
   redraw
   echo ""
+  return ret
 endfunction
 
 function! s:TestRepository(repository)
@@ -390,16 +389,11 @@ function! s:Banish(input, type)
   endif
 endfunction
 
-function! s:Scry(input)
-  if a:input == ''
-    call s:DisplayInvoked()
-    echo "\n"
-    call s:DisplayBanished()
-  else
+function! s:InitLists(input)
     let s:lastScry = substitute(a:input, '\s\s*', '+', 'g')
     let lastScryPlus = substitute(a:input, '\s\s*', '', 'g')
     redraw
-    echo "Searching..."
+    echo "Searching ".a:input."..."
     let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
     let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
@@ -409,6 +403,15 @@ function! s:Scry(input)
     let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*', '\1', 'g') "this includes escaped quotes
     let description = substitute(description, '\\"', '"', 'g')
     let s:descriptionList = split(description, '\n')
+endfunction
+
+function! s:Scry(input)
+  if a:input == ''
+    call s:DisplayInvoked()
+    echo "\n"
+    call s:DisplayBanished()
+  else
+    call s:InitLists(a:input)
     let index=0
     let length=len(s:siteList)
     redraw
@@ -520,6 +523,7 @@ function! s:ReloadScripts()
       endtry
     endfor
   endfor
+  execute ':Helptags'
 endfunction
 
 function! s:MagicName(plugin)
