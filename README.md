@@ -5,7 +5,7 @@ Remember back in the dark ages of 2013? When you had to search for vim plugins l
 
 In 2014, you can just type ":Invoke &lt;keyword&gt;" and vizardry will automatically search github for the plugin you want and install it for you.
 
-In 2015 you can even upgrade plugins from any git repo or vim.org using [:Evolve](https://github.com/dbeniamine/vizardry#evolve).
+In 2015 you can even upgrade plugins from any git repo or vim.org using [:Evolve](#evolve).
 
 
 ## <a name="Fork">Why this fork ?</a>
@@ -13,9 +13,9 @@ In 2015 you can even upgrade plugins from any git repo or vim.org using [:Evolve
 This fork add several nice features to the [original vizardry plugin from ardagnir](https://github.com/ardagnir/vizardry):
 
 + `Vanish` command to actually remove a plugin.
-+ `Evolve` command to upgrade one or every plugins see [Evolve](https://github.com/dbeniamine/vizardry#evolve).
++ `Evolve` command to upgrade one or every plugins see [Evolve](#evolve).
 + Good submodule handeling for people having their vim config in a git repo
-see [submodules](https://github.com/dbeniamine/vizardry#submodules)).
+see [submodules](#submodules)).
 + Retrieve the README.md file while using `:Invoke`.
 + Set the lenght of `Scry` results list.
 + `:Helptags` is automatically called every time a sumodule is Invoked.
@@ -40,88 +40,114 @@ are the defaults):
           \'Evolve': "[Vizardry] Evolved vim submodule:",
           \}
 
-Each time you `Invoke` are `Bannish` a module, the submodule will be correctly
+Each time you `:Invoke`, `:Bannish` or `:Vanish` a module, the submodule will be correctly
 updated and a minimal commit will be created.
 
 #### Note:
 
 + Commits created by Vizardry are not automatically pushed.
-+ The `.gitmodule` is included in each commit, do not use `Invoke` or `Bannish` if it contains some bad modifications.
-
-##Basic Usage
-- Type :<b>Invoke</b> with no keywords to reload your plugins.
-- Type :<b>Invoke</b> &lt;keyword&gt; and hit yes to install a plugin and reload.
-- Type :<b>Banish</b> &lt;samekeyword&gt; to remove that plugin from pathogen. You will have to restart vim to see the effect.
-- Type :<b>Vanish</b> &lt;samekeyword&gt; to remove definitively that plugin files.
-- Type :<b>Evolve</b>  \[samekeyword\] to upgrade one or every plugns see [Evolve](https://github.com/dbeniamine/vizardry#evolve).
-
-##Additional Usage
-- Type :<b>Unbanish</b> &lt;keyword&gt; to reverse a banish.
-- Type :<b>Scry</b> with no keywards to list all invoked and banished plugins.
-- Type :<b>Scry</b> &lt;keyword&gt; to search github for a script and output 
-top N results. The number of displayed results can be set by adding `let g:VizardryNbScryResults=25` to your vimrc. Default is 10.
-- Type :<b>Invoke</b> &lt;number&gt; to install the plugin with that number from the last scry.
-- Type :<b>Magic</b> to manage global and plugin-specific settings. See [Magic](https://github.com/dbeniamine/vizardry#magic) below.
++ The `.gitmodule` is included in each commit, do not use `:Invoke`, `:Bannish`
+or `:Vanish` if it contains some bad modifications.
 
 
-##Examples
-Suppose you're in the middle of vimming and you have a sudden need to surround random words in "scare quotes". You can't remember who made the surround plugin, or whether it's called surround.vim, vim-surround or vim-surround-plugin. Most importantly, you're lazy.
+## Commands
 
-Just type:
++   :Scry [&lt;keyword&gt;]
 
-    :Invoke surround
+    + If no keyword is given, list all invoked and banished plugins.
+    + If keyword is given, search github for a script containing &lt;keyword&gt; in
+    title or readme and list N first results. The number of results displayed
+    can be configured by adding the following to your vimrc:
 
-Vizardry will pop up a prompt saying:
+        let g:VizardryNbScryResults = 25
 
-    Found tpope/vim-surround
-    (surround.vim: quoting/parenthesizing made simple)
+    Default is 10.
 
-    Clone as "surround"? (Yes/No/Rename/DisplayMore)
++   :Invoke [&lt;keyword&gt;|N]
 
-Press Y and you can immediately start surrounding things.  You can also take a
-look at the README.md directly in vim by hitting 'd'.  It's that easy.
+    + If no arguments is specified, reload your plugins.
+    + If the argument is a number, ask to install the plugin with that
+        number from the last |:Scry| or Invoke.
+    + If the argument is a keyword, search github for a plugin matching
+    this keyword and ask for install.
 
-The readme file is piped to vim, you can configure the viewing command by
-adding (an modifiying) the following line to your vimrc:
+    Suppose you're in the middle of vimming and you have a sudden need to surround
+    random words in "scare quotes". You can't remember who made the surround
+    plugin, or whether it's called surround.vim, vim-surround or
+    vim-surround-plugin. Most importantly, you're lazy.
 
-    let g:VizardryReadmeReader='view -c "set ft=markdown" -'
+    Just type:
 
-Even plugins with vague or silly names can be found with vizardry. Imagine you're running multiple instances of vim and need a package to sync registers.
+        :Invoke surround
 
-Type:
+    Vizardry will pop up a prompt saying:
 
-    :Invoke sync registers
+        Result 1/20 tpope/vim-surround
+        (surround.vim: quoting/parenthesizing made simple)
 
-Vizardry will prompt you with:
+        Clone as "surround"? (Yes/Rename/DisplayMore/Next/Previous/Abort)
 
-    Found ardagnir/united-front
-    (Automatically syncs registers between vim instances)
+    Press Y and you can immediately start surrounding things.  You can also take a
+    look at the README.md directly in vim by hitting 'd', Go to the next or
+    previous script with 'n' and 'p' or abort 'a'. It's that easy.
 
-    Clone as "syncregisters"? (Yes/No/Rename)
+    To view the readme, an other instance of vim is called, the command line can
+    be configured:
 
-Just as easy.
-
-##  Evolve
-
-The `Evolve` command is able to upgrade any plugin instaled from a git
-repository or vim.org.
-
-To upgrade plugins from vim.org, you need to add a metainfos file.
-A metainfos file contains two lines
-1. The url of the vimscript
-2. The version number (0 to initialize the synchronization)
-
-**Note:** `atool` is required for upgrading sripts from vim.org
-
-##Magic
-  Too many globals and settings for each plugin? Vizardry stores a set of magic files that can keep track of these for you.
-
-- Type :<b>Magic</b> * &lt;magic words&gt; and add thse words to a file that acts similarly to your vimrc.
-- Type :<b>Magic</b> &lt;plugin&gt; &lt;magic words&gt; to add plugin-specific globals and settings. These are only used when that plugin isn't banished.
-- Type :<b>Magic{edit/split/vsplit}</b> &lt;plugin&gt; to edit/split/vsplit the magic file for that plugin.
+        let g:VizardryReadmeReader='view -c "set ft=markdown" -'
 
 
-##Requirements
+    Even plugins with vague or silly names can be found with vizardry. Imagine
+    you're running multiple instances of vim and need a package to sync registers.
+
+    Type:
+
+        :Invoke sync registers
+
+    Vizardry will prompt you with:
+
+        Result 1/3 ardagnir/united-front
+        (Automatically syncs registers between vim instances)
+
+        Clone as "syncregisters"? (Yes/Rename/DisplayMore/Next/Previous/Abort)
+
+    Just as easy.
+
+
+
++   :Banish &lt;keyword&gt;
+
+    Banish a plugin, this only forbid pathogen to load it and does not remove
+    the files. You need to restart vim to see the effects.
+
++   :Unbanish &lt;keyword&gt;
+
+    Reverse a banish.
+
++   :Vanish &lt;keyword&gt;
+
+    Remove definitively a plugin's files.
+
++   <a name="evolve">:Evolve  [&lt;keyword&gt;]</a>
+
+    Upgrade the plugin matching &lt;keyword&gt;. If no &lt;keyword&gt; is given, upgrade
+    all possible plugins.
+
+    The plugins downloaded from github are upgraded by doing:
+
+        git pull origin master
+
+    |:Evolve| is also able to upgrade plugin downloaded from vim.org, to do so,
+    you need to create a `.metainfos` file at the root of the plugin directory
+    (not yout bundle directory). Such a file is composed of two lines:
+
+    1. the vimscript url (at vim.org)
+    2. The current version number (0 for initilization)
+
+    **Note:** `atool` is required for upgrading sripts from vim.org, see
+    [Requirements](#requirements).
+
+## Requirements
 - Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
@@ -130,18 +156,24 @@ A metainfos file contains two lines
 
 - You will probably have issues if you use a Windows OS.
 
-##Installation
+## Installation
+
 Use pathogen.
 
     cd ~/.vim/bundle
     git clone https://github.com/dbeniamine/vizardry
 
-##Notes
+## Notes
+
 - Vizardry banishes plugins by adding a tilde to the end of their directory
   name. This stops pathogen from reading them. If you want to remove packages
-  completly, you must use the `Vanish` command.
-- Vizardry finds the matching plugin with the highest star rating on github. This is usually, but not always, the one you want, so pay attention. Remember that you can use scry to find more results.
-- If you want to use submodules instead of cloning, see See [submodules](https://github.com/dbeniamine/vizardry#submodules) above
+  completly, you can use the `:Vanish` command.
+- Vizardry finds the matching plugin with the highest star rating on github.
+  This is usually, but not always, the one you want, so pay attention and look
+  at the readme. Remember that you can use scry to list more results, or just
+  walk through the results.
+- If you want to use submodules instead of cloning, see [submodules](#submodules)
 
 ##License
+
 Vizardry is licensed under the AGPL v3
