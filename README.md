@@ -14,11 +14,12 @@ This fork add several nice features to the [original vizardry plugin from ardagn
 
 + `Vanish` command to actually remove a plugin.
 + `Evolve` command to upgrade one or every plugins see [Evolve](#evolve).
-+ Good submodule handeling for people having their vim config in a git repo
++ Good submodule handling for people having their vim config in a git repo
 see [submodules](#submodules)).
 + Retrieve the README.md file while using `:Invoke`.
-+ Set the lenght of `Scry` results list.
-+ `:Helptags` is automatically called every time a sumodule is Invoked.
++ Navigate through search results with `:Invoke`
++ Set the length of `Scry` results list.
++ Automatically call `:Helptags` every time a plugin is Invoked.
 
 ### <a name="submodules">How to use vizardry with submodules ?</a>
 
@@ -30,7 +31,7 @@ Set the following variables in your vimrc:
 The second variable ** must be** the root of the repo containing your vim
 files.
 
-Optionnaly you can set the vim commit messages (the name of the modified
+Optionally you can set the vim commit messages (the name of the modified
 plugin will always be happened in the end of the message, the proposed values
 are the defaults):
 
@@ -142,9 +143,9 @@ or `:Vanish` if it contains some bad modifications.
     (not yout bundle directory). Such a file is composed of two lines:
 
     1. the vimscript url (at vim.org)
-    2. The current version number (0 for initilization)
+    2. The current version number (0 for initialization)
 
-    **Note:** `atool` is required for upgrading sripts from vim.org, see
+    **Note:** `atool` is required for upgrading scripts from vim.org, see
     [Requirements](#requirements).
 
 ## Requirements
@@ -152,7 +153,7 @@ or `:Vanish` if it contains some bad modifications.
 
 - It also needs curl, as well as commandline programs that come with most \*nix systems.
 
-+ [atool](http://freecode.com/projects/atool) is required for upgrading sripts from vim.org.
++ [atool](http://freecode.com/projects/atool) is required for upgrading scripts from vim.org.
 
 - You will probably have issues if you use a Windows OS.
 
@@ -167,10 +168,10 @@ Use pathogen.
 
 - Vizardry banishes plugins by adding a tilde to the end of their directory
   name. This stops pathogen from reading them. If you want to remove packages
-  completly, you can use the `:Vanish` command.
+  completely, you can use the `:Vanish` command.
 - Vizardry finds the matching plugin with the highest star rating on github.
   This is usually, but not always, the one you want, so pay attention and look
-  at the readme. Remember that you can use scry to list more results, or just
+  at the readme. Remember that you can use `:Scry` to list more results, or just
   walk through the results.
 - If you want to use submodules instead of cloning, see [submodules](#submodules)
 
