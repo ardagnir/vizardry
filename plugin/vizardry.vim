@@ -246,13 +246,15 @@ endfunction
 
 function! s:GrabRepository(site, name)
   if exists("g:VizardryGitBaseDir")
-    let l:basedir=g:VizardryGitBaseDir
     let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
+    le l:precmd=':!cd '.g:VizardryGitBaseDir
+    let l:path=s:relativeBundleDir
   else
     let l:commit=''
-    let l:basedir='$HOME'
+    let l:precmd=''
+    let l:path=s:bundleDir
   endif
-  execute ':!cd '.l:basedir.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.s:relativeBundleDir.'/'.a:name.l:commit
+  execute l:precmd.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.l:path.'/'.a:name.l:commit
 endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice, index)
@@ -503,8 +505,10 @@ endfunction
 let s:scriptDir = expand('<sfile>:p:h')
 let s:bundleDir = substitute(s:scriptDir, '/[^/]*/[^/]*$', '', '')
 let s:EvolveVimOrgPath = s:scriptDir.'/EvolveVimOrgPlugins.sh'
-let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
-let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
+if exists("g:VizardryGitBaseDir")
+  let s:relativeBundleDir=substitute(s:bundleDir,g:VizardryGitBaseDir,'','')
+  let s:relativeBundleDir=substitute(s:relativeBundleDir,'^/','','')
+endif
 
 function! s:ReloadScripts()
   source $MYVIMRC
