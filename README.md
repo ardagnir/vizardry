@@ -1,3 +1,5 @@
+**Note: I'm too busy with other stuff to work on this right now. If you like vizardry, I recommend using [dbeniamine's awesome vizardry fork](https://github.com/dbeniamine/vizardry)**
+
 Vizardry
 ============
 
