@@ -397,6 +397,7 @@ function! s:InitLists(input)
     redraw
     echo "Searching ".a:input."..."
     let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
+    let curlResults = substitute(curlResults, 'null,','"",','g')
     let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
     let s:siteList = split(site, '\n')
