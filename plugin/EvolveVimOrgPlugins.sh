@@ -5,7 +5,7 @@ testAndExit()
 {
     if [ $1 -ne 0 ]
     then
-        echo "ERROR: $2 $1"
+        echo "ERROR: $2, code: $1"
         rm $$.php
         exit $1
     fi
@@ -20,7 +20,7 @@ then
 else
     ln=$(head -n 1 .metainfos)
     wget $ln -q -O $$.php
-    testAndExit $? "Can't retrieve plugin version: "
+    testAndExit $? "Can't retrieve last available version for plugin $f"
     l=$(($(grep -n "span.*script version" $$.php  | cut -d ':' -f 1)+1))
     l="$l"d
     text=$(sed 1,$l $$.php  | egrep -v "(vba|vmb)" | grep "href.*download" -A 3 | head -n 3)
