@@ -6,6 +6,7 @@ testAndExit()
     if [ $1 -ne 0 ]
     then
         echo "ERROR: $2 $1"
+        rm $$.php
         exit $1
     fi
 }
