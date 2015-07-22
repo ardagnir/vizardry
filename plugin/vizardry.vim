@@ -131,10 +131,11 @@ function! s:Invoke(input)
   if inputNumber!=0 && inputNumber < len(s:siteList) || a:input=="0"
     let l:index=inputNumber
     echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
-    let inputNice = substitute(s:lastScry, '\s\s*', '', 'g')
+    let inputNice = s:lastScry
   else
-    let inputPlus = substitute(a:input, '\s\s*', '+', 'g')
-    let inputNice = substitute(a:input, '\s\s*', '', 'g')
+    let inputNice = substitute(substitute(a:input, '\s*-u\s\s*\S*\s*','',''), '\s\s*', '', 'g')
+    echo inputNice
+    sleep 3
     let exists = s:TestForBundle(inputNice)
     if exists
       let response = s:GetResponseFromPrompt('You already have a bundle called '.inputNice.'. Search anyway? (Yes/No)',['y','n'])
@@ -142,7 +143,7 @@ function! s:Invoke(input)
         return
       endif
     endif
-    call s:InitLists(inputPlus)
+    call s:InitLists(a:input)
     let l:index=0
   endif
 
@@ -249,9 +250,12 @@ function! s:ListChoices(choices)
 endfunction
 
 function! s:GrabRepository(site, name)
+  echo "grab repo".a:site. "name ".a:name
+  sleep 3
   if exists("g:VizardryGitBaseDir")
+    echo "coucou"
     let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
-    le l:precmd=':!cd '.g:VizardryGitBaseDir
+    let l:precmd=':!cd '.g:VizardryGitBaseDir
     let l:path=s:relativeBundleDir
   else
     let l:commit=''
@@ -259,11 +263,17 @@ function! s:GrabRepository(site, name)
     let l:path=s:bundleDir
   endif
   execute l:precmd.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.l:path.'/'.a:name.l:commit
+  sleep 20
 endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice, index)
   let valid = 0
-  let inputNice = s:FormValidBundle(a:inputNice)
+  if a:inputNice==""
+    let bundle=substitute(a:site, '.*/','','')
+  else
+    let bundle=a:inputNice
+  endif
+  let inputNice = s:FormValidBundle(bundle)
   let ret=-1
   let idx=a:index+1
   while valid == 0
@@ -337,7 +347,9 @@ function! s:TestRepository(repository)
 endfunction
 
 function! s:TestForBundle(bundle)
-  return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')!=''
+  if a:bundle!=""
+    return system('ls -d '.s:bundleDir.'/'.a:bundle.' 2>/dev/null')!=''
+  endif
 endfunction
 
 function! s:FormValidBundle(bundle)
@@ -396,11 +408,18 @@ function! s:Banish(input, type)
 endfunction
 
 function! s:InitLists(input)
-    let s:lastScry = substitute(a:input, '\s\s*', '+', 'g')
-    let lastScryPlus = substitute(a:input, '\s\s*', '', 'g')
-    redraw
-    echo "Searching ".a:input."..."
-    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort='.g:VizardrySortScryResults.'\&order=desc')
+    let user=substitute(a:input, '.*-u\s\s*\(\S*\).*','\1','')
+    let l:input=substitute(substitute(a:input, '-u\s\s*\S*','',''),
+          \'^\s\s*','','')
+    let s:lastScry = substitute(l:input, '\s\s*', '', 'g')
+    let lastScryPlus = substitute(l:input, '\s\s*', '+', 'g')
+    let query='vim+'.lastScryPlus
+    if user != ""
+      let query=substitute(query,'+$','','')  " Remove useless '+' if no keyword
+      let query.='+user:'.user
+    endif
+    echo "Searching ".query."..."
+    let curlResults = system('curl -silent https://api.github.com/search/repositories?q='.query.'\&sort='.g:VizardrySortScryResults.'\&order=desc')
     let curlResults = substitute(curlResults, 'null,','"",','g')
     let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')

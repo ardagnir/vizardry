@@ -3,7 +3,7 @@
 Remember back in the dark ages of 2013? When you had to search for vim plugins
 like a wild animal, using your browser?
 
-In 2014, you can just type "|:Invoke| <keyword>" and vizardry will
+In 2014, you can just type "|:Invoke| <keyword>" and Vizardry will
 automatically search github for the plugin you want and install it for you.
 
 In 2015 you can even upgrade plugins from any git repo or vim.org using
@@ -12,15 +12,16 @@ In 2015 you can even upgrade plugins from any git repo or vim.org using
 ===============================================================================
 Why this fork ?                                               *Vizardry-Fork* ~
 
-This fork add several nice features to the original vizardry plugin from
-ardagnir (https://github.com/ardagnir/vizardry):
+This fork add several nice features to the original Vizardry plugin from
+ardagnir (https://github.com/ardagnir/Vizardry):
 
 + |:Vanish| command to actually remove a plugin.
 + |:Evolve| command to upgrade one or every plugins.
-+ Good submodule handeling for people having their vim config in a git repo
++ Good submodule handling for people having their vim config in a git repo
 see |Vizardry-submodules|.
 + Retrieve the README.md file while using |:Invoke|
 + Navigate through search results with |:Invoke|
++ Search for plugins written by a specific user
 + Set the length of |:Scry| results list.
 + Automatically call |:Helptags| every time a plugin is Invoked.
 
@@ -28,16 +29,26 @@ see |Vizardry-submodules|.
 ===============================================================================
 Vizardry Commands                                         *Vizardry-commands* ~
 
-:Scry [<keyword>]                                                        *Scry*
+:Scry [<query>]
 
-    + If no keyword is given, list all invoked and banished plugins.
-    + If keyword is given, search github for a script containing <keyword> in
-    title or readme and list N first results. The number of results displayed
-    can be configured by adding the following to your vimrc:
+
+    + If no <query> is given, list all invoked and banished plugins.
+    + If a <query> is specified (see |Vizardry-query|), search github for a
+    script matching <query> in title or readme and list N first results.
+
+    The number of results displayed can be configured by adding the following
+    to your vimrc:
 >
     let g:VizardryNbScryResults = 25
 <
     Default is 10.
+
+    A <query> can be:                                        *Vizardry-query*
+        + One or several <keywords>
+        + A query matching the github search api (see
+          https://developer.github.com/v3/search/#search-repositories)
+        + -u <user> (search every repositories of <user> matching 'vim'
+        + One or several <keywords> and -u <user> (in any order)
 
                                                    *Vizardry-sortSearchResults*
     By default, search results are sorted by number of stars, but you can
@@ -48,14 +59,14 @@ Vizardry Commands                                         *Vizardry-commands* ~
     Available parameters are `stars` (default), `forks`, `updated`, `""` (best
     match).
 
-:Invoke [<keyword>|N]                                                 *:Invoke*
+:Invoke [<query>|N]                                                 *:Invoke*
 
         + If no arguments is specified, reload your plugins.
         + If the argument is a number, ask to install the plugin with that
             number from the last |:Scry| or Invoke.
-        + If the argument is a keyword, search github for a plugin matching
-        this keyword and ask for install, the sort criteria for search results
-        can be configured see |Vizardry-sortSearchResults|.
+        + If the argument is a <query>, search github for a plugin matching
+        <query> (see |Vizardry-query|)  and ask for install, the sort criteria
+        for search results can be configured see |Vizardry-sortSearchResults|.
 
 Suppose you're in the middle of vimming and you have a sudden need to surround
 random words in "scare quotes". You can't remember who made the surround
@@ -84,7 +95,7 @@ be configured:
     let g:VizardryReadmeReader='view -c "set ft=markdown" -'
 <
 
-Even plugins with vague or silly names can be found with vizardry. Imagine
+Even plugins with vague or silly names can be found with Vizardry. Imagine
 you're running multiple instances of vim and need a package to sync registers.
 
 Type:
@@ -131,11 +142,20 @@ you need to create a `.metainfos` file at the root of the plugin directory
 1. the vimscript url (at vim.org)
 2. The current version number (0 for initialization)
 
-Note: `atool` is required for upgrading scripts from vim.org, see
-|Vizardry-Requirements|.
+Note:
+
++   `atool` is required for upgrading scripts from vim.org,
+    see |Vizardry-Requirements|.
++   Although this functionality works fine, it is recommended to always
+    install plugins by cloning a repository. To install plugin found at vim.org
+    by from github use:
+>
+        :Invoke -u vim-scripts <plugin-name>
+<
+    Were <plugin-name> is the actual name of the plugin at vim.org
 
 ===============================================================================
-How to use vizardry with submodules ?                  *Vizardry-Submodules* ~
+How to use Vizardry with submodules ?                  *Vizardry-Submodules* ~
 
 Set the following variables in your vimrc:
 >
@@ -185,7 +205,7 @@ Installation                                          *Vizardry-Installation* ~
 Use pathogen.
 >
     cd ~/.vim/bundle
-    git clone https://github.com/ardagnir/vizardry
+    git clone https://github.com/dbeniamine/vizardry
 <
 
 Notes:
