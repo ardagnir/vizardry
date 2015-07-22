@@ -268,11 +268,7 @@ endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice, index)
   let valid = 0
-  if a:inputNice==""
-    let bundle=substitute(a:site, '.*/','','')
-  else
-    let bundle=a:inputNice
-  endif
+  let bundle=substitute(a:site, '.*/','','')
   let inputNice = s:FormValidBundle(bundle)
   let ret=-1
   let idx=a:index+1

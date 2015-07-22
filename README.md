@@ -177,6 +177,10 @@ vim-surround-plugin. Most importantly, you're lazy.
 
         Were &lt;plugin-name&gt; is the actual name of the plugin at vim.org
 
+        You can also search a plugin by vim.org id:
+
+            :Invoke -u vim-scripts in:readme script_id=<id>
+
 ## Requirements
 - Vizardry requires [pathogen](https://github.com/tpope/vim-pathogen). But you already have pathogen installed, don't you?
 

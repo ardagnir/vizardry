@@ -154,6 +154,11 @@ Note:
 <
     Were <plugin-name> is the actual name of the plugin at vim.org
 
+    You can also search a plugin by vim.org id:
+
+        :Invoke -u vim-scripts in:readme script_id=<id>
+
+
 ===============================================================================
 How to use Vizardry with submodules ?                  *Vizardry-Submodules* ~
 
