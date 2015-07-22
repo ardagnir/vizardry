@@ -64,6 +64,15 @@ or `:Vanish` if it contains some bad modifications.
 
     Default is 10.
 
+    By default, search results are sorted by number of stars, but you can
+    customize this behavior:
+
+        let g:VizardrySortScryResults="updated"
+
+    Available parameters are `stars` (default), `forks`, `updated`, `""` (best
+    match).
+
+
 +   :Invoke [&lt;keyword&gt;|N]
 
     + If no arguments is specified, reload your plugins.

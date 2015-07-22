@@ -50,6 +50,10 @@ if !exists("g:VizardryReadmeReader")
   let g:VizardryReadmeReader='view -c "set ft=markdown" -'
 endif
 
+if !exists("g:VizardrySortScryResults")
+  let g:VizardrySortScryResults="stars"
+endif
+
 command! -nargs=? Invoke call s:Invoke(<q-args>)
 command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
 command! -nargs=? -complete=custom,s:ListAllInvoked Vanish call s:Banish(<q-args>, 'Vanish')
@@ -396,7 +400,7 @@ function! s:InitLists(input)
     let lastScryPlus = substitute(a:input, '\s\s*', '', 'g')
     redraw
     echo "Searching ".a:input."..."
-    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort=stars\&order=desc')
+    let curlResults = system('curl -silent https://api.github.com/search/repositories?q=vim+'.lastScryPlus.'\&sort='.g:VizardrySortScryResults.'\&order=desc')
     let curlResults = substitute(curlResults, 'null,','"",','g')
     let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
     let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')

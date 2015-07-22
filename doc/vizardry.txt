@@ -39,13 +39,23 @@ Vizardry Commands                                         *Vizardry-commands* ~
 <
     Default is 10.
 
+                                                   *Vizardry-sortSearchResults*
+    By default, search results are sorted by number of stars, but you can
+    customize this behavior:
+>
+    let g:VizardrySortScryResults="updated"
+<
+    Available parameters are `stars` (default), `forks`, `updated`, `""` (best
+    match).
+
 :Invoke [<keyword>|N]                                                 *:Invoke*
 
         + If no arguments is specified, reload your plugins.
         + If the argument is a number, ask to install the plugin with that
             number from the last |:Scry| or Invoke.
         + If the argument is a keyword, search github for a plugin matching
-        this keyword and ask for install.
+        this keyword and ask for install, the sort criteria for search results
+        can be configured see |Vizardry-sortSearchResults|.
 
 Suppose you're in the middle of vimming and you have a sudden need to surround
 random words in "scare quotes". You can't remember who made the surround
