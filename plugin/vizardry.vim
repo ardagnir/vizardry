@@ -1,6 +1,6 @@
-" Vim plugin for automatically sharing registers between vim instances.
-" Last Change: Dec 29 2013
-" Maintainer: James Kolb
+" Vim plugin for installing other vim plugins.
+" Last Change: August 07 2015
+" Maintainer: David Beniamine
 "
 " Copyright (C) 2013, James Kolb. All rights reserved.
 "
@@ -55,15 +55,24 @@ if !exists("g:VizardrySortScryResults")
 endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Banish call s:Banish(<q-args>, 'Banish')
-command! -nargs=? -complete=custom,s:ListAllInvoked Vanish call s:Banish(<q-args>, 'Vanish')
-command! -nargs=? -complete=custom,s:ListAllBanished Unbanish call s:UnbanishCommand(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllBanished Evolve call s:Evolve(<q-args>,0)
-command! -nargs=? Scry call s:Scry(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Magic call s:Magic(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Magicedit call s:MagicEdit(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Magicsplit call s:MagicSplit(<q-args>)
-command! -nargs=? -complete=custom,s:ListAllInvoked Magicvsplit call s:MagicVSplit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Banish
+      \ call s:Banish(<q-args>, 'Banish')
+command! -nargs=? -complete=custom,s:ListAllInvoked Vanish
+      \ call s:Banish(<q-args>, 'Vanish')
+command! -nargs=? -complete=custom,s:ListAllBanished Unbanish
+      \ call s:UnbanishCommand(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllBanished Evolve
+      \ call s:Evolve(<q-args>,0)
+command! -nargs=? Scry
+      \ call s:Scry(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magic
+      \ call s:Magic(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicedit
+      \ call s:MagicEdit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicsplit
+      \ call s:MagicSplit(<q-args>)
+command! -nargs=? -complete=custom,s:ListAllInvoked Magicvsplit
+      \ call s:MagicVSplit(<q-args>)
 
 function s:GitEvolve(path)
   let l:ret=system('cd '.a:path.' && git pull origin master')
@@ -106,9 +115,12 @@ function! s:Evolve(input, rec)
   let l:files=substitute(l:files,'^\s*$','','')
   if a:rec==0
     if l:files!=""
-      let l:basefiles=substitute(substitute(l:files,s:bundleDir.'/','','g'),'\s\s*', ' ','g')
+      let l:basefiles=substitute(
+            \ substitute(l:files,s:bundleDir.'/','','g'),'\s\s*', ' ','g')
       if exists("g:VizardryGitBaseDir")
-        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.g:VizardryCommitMsgs['Evolve'].' '.l:basefiles.'" '.l:files.' .gitmodules'
+        execute ':!'.'cd '.g:VizardryGitBaseDir.' && git commit -m"'.
+              \ g:VizardryCommitMsgs['Evolve'].' '.l:basefiles.'" '.
+              \ l:files.' .gitmodules'
       else
         echo "Evolved plugins: ".l:files
       endif
@@ -133,12 +145,12 @@ function! s:Invoke(input)
     echo "Index ".inputNumber.' from scry search for "'.s:lastScry.'":'
     let inputNice = s:lastScry
   else
-    let inputNice = substitute(substitute(a:input, '\s*-u\s\s*\S*\s*','',''), '\s\s*', '', 'g')
-    echo inputNice
-    sleep 3
+    let inputNice = substitute(substitute(a:input, '\s*-u\s\s*\S*\s*','',''),
+          \ '\s\s*', '', 'g')
     let exists = s:TestForBundle(inputNice)
     if exists
-      let response = s:GetResponseFromPrompt('You already have a bundle called '.inputNice.'. Search anyway? (Yes/No)',['y','n'])
+      let response = s:GetResponseFromPrompt('You already have a bundle called '
+            \ .inputNice.'. Search anyway? (Yes/No)',['y','n'])
       if response == 'n'
         return
       endif
@@ -155,11 +167,11 @@ function! s:Invoke(input)
       echo 'Found '.site
       echo '('.description.')'
       if(matchingBundle[len(matchingBundle)-1] == '~')
-        let matchingBundle = strpart(matchingBundle, 0, strlen(matchingBundle)-1)
+        let matchingBundle = strpart(matchingBundle,0,strlen(matchingBundle)-1)
         echohl WarningMsg
         echo 'This is the repository for banished bundle "'.matchingBundle.'"'
         echohl None
-        if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n']) == 'y')
+        if( s:GetResponseFromPrompt("Unbanish it? (Yes/No)", ['y', 'n'])== 'y')
           call s:Unbanish(matchingBundle, 1)
           execute ':Helptags'
         endif
@@ -204,8 +216,11 @@ endfunction
 
 function! s:Unbanish(bundle, reload)
   if exists("g:VizardryGitBaseDir")
-    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
-    let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.a:bundle.'~ '.s:relativeBundleDir.'/'.a:bundle.l:commit
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.
+          \ a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.
+          \ s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
+    let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.
+          \ a:bundle.'~ '.s:relativeBundleDir.'/'.a:bundle.l:commit
   else
     let l:cmd='mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle
   endif
@@ -250,11 +265,10 @@ function! s:ListChoices(choices)
 endfunction
 
 function! s:GrabRepository(site, name)
-  echo "grab repo".a:site. "name ".a:name
-  sleep 3
+  echo "grab repo ".a:site. " name ".a:name
   if exists("g:VizardryGitBaseDir")
-    echo "coucou"
-    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
+    let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.
+          \ a:name.'" '.s:relativeBundleDir.'/'.a:name.' .gitmodules'
     let l:precmd=':!cd '.g:VizardryGitBaseDir
     let l:path=s:relativeBundleDir
   else
@@ -262,8 +276,8 @@ function! s:GrabRepository(site, name)
     let l:precmd=''
     let l:path=s:bundleDir
   endif
-  execute l:precmd.' && git '.g:VizardryGitMethod.' https://github.com/'.a:site.' '.l:path.'/'.a:name.l:commit
-  sleep 20
+  execute l:precmd.' && git '.g:VizardryGitMethod.' https://github.com/'.
+        \ a:site.' '.l:path.'/'.a:name.l:commit
 endfunction
 
 function! s:HandleInvokePrompt(site, description, inputNice, index)
@@ -273,7 +287,10 @@ function! s:HandleInvokePrompt(site, description, inputNice, index)
   let ret=-1
   let idx=a:index+1
   while valid == 0
-    let response = s:GetResponseFromPrompt("Result ".idx."/".len(s:siteList).": ".a:site."\n(".a:description.")\n\nClone as \"".inputNice."\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)", ['y','r','d','n','p','a'])
+    let response = s:GetResponseFromPrompt("Result ".idx."/".len(s:siteList).
+          \ ": ".a:site."\n(".a:description.")\n\nClone as \"".inputNice.
+          \ "\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)",
+          \ ['y','r','d','n','p','a'])
     if response == 'y'
       call s:GrabRepository(a:site, inputNice)
       call s:ReloadScripts()
@@ -309,15 +326,18 @@ function! s:HandleInvokePrompt(site, description, inputNice, index)
       let valid = 1
     elseif response == 'd'
       echo "Looking for README url"
-      let readmeurl=system('curl -silent https://api.github.com/repos/'.a:site.'/readme | grep download_url')
-      let readmeurl=substitute(readmeurl,'\s*"download_url"[^"]*"\(.*\)",.*','\1','')
+      let readmeurl=system('curl -silent https://api.github.com/repos/'.
+            \ a:site.'/readme | grep download_url')
+      let readmeurl=substitute(readmeurl,
+            \ '\s*"download_url"[^"]*"\(.*\)",.*','\1','')
       echo "Retrieving README"
       if readmeurl == ""
         echohl WarningMsg
         echo "No readme found"
         echohl None
       else
-        execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.g:VizardryReadmeReader
+        execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.
+              \ g:VizardryReadmeReader
       endif
     elseif response == 'a'
       let valid=1
@@ -333,9 +353,12 @@ endfunction
 
 function! s:TestRepository(repository)
   redraw
-  let bundleList = split(system('ls -d '.s:bundleDir.'/* 2>/dev/null | sed -n "s,.*bundle/\(.*\),\1,p"'),'\n')
+  let bundleList = split(system('ls -d '.s:bundleDir.
+        \ '/* 2>/dev/null | sed -n "s,.*bundle/\(.*\),\1,p"'),'\n')
   for bundle in bundleList
-    if system('cd '.s:bundleDir.'/'.bundle.' && git config --get remote.origin.url') == 'https://github.com/'.a:repository."\n"
+    if system('cd '.s:bundleDir.'/'.bundle.
+          \ ' && git config --get remote.origin.url') ==
+          \ 'https://github.com/'.a:repository."\n"
       return bundle
     endif
   endfor
@@ -354,7 +377,7 @@ function! s:FormValidBundle(bundle)
   endif
 
   let counter = 0
-  while s:TestForBundle(a:bundle.counter) || s:TestForBundle(a:bundle.counter.'~')
+  while s:TestForBundle(a:bundle.counter)||s:TestForBundle(a:bundle.counter.'~')
     let counter += 1
   endwhile
   return a:bundle.counter
@@ -377,16 +400,22 @@ function! s:Banish(input, type)
     let matchList = split(matches,'\n')
     for aMatch in matchList
       if exists("g:VizardryGitBaseDir")
-        let l:commit=' && git commit -m "'.g:VizardryCommitMsgs[a:type].' '.aMatch.'" '.s:relativeBundleDir.'/'.aMatch.' .gitmodules'
+        let l:commit=' && git commit -m "'.g:VizardryCommitMsgs[a:type].' '.
+              \ aMatch.'" '.s:relativeBundleDir.'/'.aMatch.' .gitmodules'
         if a:type== 'Banish'
           let l:commit.=' '.s:relativeBundleDir.'/'.aMatch.'~'
-          let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.aMatch.'~'.l:commit
+          let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.
+                \ s:relativeBundleDir.'/'.aMatch.' '.s:relativeBundleDir.'/'.
+                \ aMatch.'~'.l:commit
         else
-          let l:cmd='cd '.g:VizardryGitBaseDir.' && git submodule deinit -f '.s:relativeBundleDir.'/'.aMatch.' && git rm -rf '.s:relativeBundleDir.'/'.aMatch.l:commit
+          let l:cmd='cd '.g:VizardryGitBaseDir.' && git submodule deinit -f '.
+                \ s:relativeBundleDir.'/'.aMatch.' && git rm -rf '.
+                \ s:relativeBundleDir.'/'.aMatch.l:commit
         endif
       else
         if a:type== 'Banish'
-          let l:cmd='mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.'~ >/dev/null'
+          let l:cmd='mv '.s:bundleDir.'/'.aMatch.' '.s:bundleDir.'/'.aMatch.
+                \ '~ >/dev/null'
         else
           let l:cmd='rm -rf '.s:bundleDir.'/'.aMatch.' >/dev/null'
         endif
@@ -410,19 +439,25 @@ function! s:InitLists(input)
     let s:lastScry = substitute(l:input, '\s\s*', '', 'g')
     let lastScryPlus = substitute(l:input, '\s\s*', '+', 'g')
     let query='vim+'.lastScryPlus
-    if user != ""
-      let query=substitute(query,'+$','','')  " Remove useless '+' if no keyword
+    if match(a:input, '-u') != -1
+      echo "match"
+      let query=substitute(query,'+$','','') "Remove useless '+' if no keyword
       let query.='+user:'.user
     endif
     echo "Searching ".query."..."
-    let curlResults = system('curl -silent https://api.github.com/search/repositories?q='.query.'\&sort='.g:VizardrySortScryResults.'\&order=desc')
+    let curlResults = system(
+          \ 'curl -silent https://api.github.com/search/repositories?q='.query.
+          \'\&sort='.g:VizardrySortScryResults.'\&order=desc')
     let curlResults = substitute(curlResults, 'null,','"",','g')
-    let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults, curlResults)
-    let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*', '\1', 'g')
+    let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults,
+          \ curlResults)
+    let site = substitute(site, '\s*"full_name"[^"]*"\([^"]*\)"[^\n]*','\1','g')
     let s:siteList = split(site, '\n')
 
-    let description = system('grep "description" | head -n '.g:VizardryNbScryResults, curlResults)
-    let description = substitute(description, '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*', '\1', 'g') "this includes escaped quotes
+    let description = system('grep "description" | head -n '.
+          \ g:VizardryNbScryResults, curlResults)
+    let description = substitute(description,
+          \ '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*','\1','g')
     let description = substitute(description, '\\"', '"', 'g')
     let s:descriptionList = split(description, '\n')
 endfunction
@@ -457,12 +492,14 @@ function! s:ListAllBanished(A,L,P)
 endfunction
 
 function! s:ListInvoked(match)
-  let invokedList = system('ls -d '.s:bundleDir.'/'.a:match.' 2>/dev/null | grep -v "~$" | sed -n "s,.*/\(.*\),\1,p"')
+  let invokedList = system('ls -d '.s:bundleDir.'/'.a:match.
+        \ ' 2>/dev/null | grep -v "~$" | sed -n "s,.*/\(.*\),\1,p"')
   return invokedList
 endfunction
 
 function! s:ListBanished(match)
-  let banishedList = system('ls -d '.s:bundleDir.'/'.a:match.'~ 2>/dev/null | sed -n "s,.*/\(.*\)~,\1,p"')
+  let banishedList = system('ls -d '.s:bundleDir.'/'.a:match.
+        \ '~ 2>/dev/null | sed -n "s,.*/\(.*\)~,\1,p"')
   return banishedList
 endfunction
 
@@ -483,7 +520,8 @@ function! s:DisplayInvoked()
       endif
     endfor
     for invoked in invokedList
-      let origin = system('(cd '.s:bundleDir.'/'.invoked.'&& git config --get remote.origin.url) 2>/dev/null')
+      let origin = system('(cd '.s:bundleDir.'/'.invoked.
+            \ '&& git config --get remote.origin.url) 2>/dev/null')
       let origin = strpart(origin, 0, strlen(origin)-1)
       if origin==''
         echo invoked
@@ -511,7 +549,8 @@ function! s:DisplayBanished()
       endif
     endfor
     for banished in banishedList
-      let origin = system('(cd '.s:bundleDir.'/'.banished.'~ && git config --get remote.origin.url) 2>/dev/null')
+      let origin = system('(cd '.s:bundleDir.'/'.banished.
+            \ '~ && git config --get remote.origin.url) 2>/dev/null')
       let origin = strpart(origin, 0, strlen(origin)-1)
       if origin==''
         echo banished
@@ -534,13 +573,15 @@ function! s:ReloadScripts()
   source $MYVIMRC
   let files=[]
   for plugin in split(&runtimepath,',')
-    for file in split(system ("find ".plugin.'/plugin -name "*.vim" 2>/dev/null'),'\n')
+    for file in split(system ("find ".plugin.
+          \ '/plugin -name "*.vim" 2>/dev/null'),'\n')
       try
         exec 'silent source '.file
       catch
       endtry
     endfor
-    for file in split(system ("find ".plugin.'/autoload -name "*.vim" 2>/dev/null'),'\n')
+    for file in split(system ("find ".plugin.
+          \ '/autoload -name "*.vim" 2>/dev/null'),'\n')
       try
         exec 'silent source '.file
       catch
