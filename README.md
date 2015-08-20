@@ -202,7 +202,7 @@ Use pathogen.
 - Vizardry banishes plugins by adding a tilde to the end of their directory
   name. This stops pathogen from reading them. If you want to remove packages
   completely, you can use the `:Vanish` command.
-- Vizardry finds the matching plugin with the highest star rating on github.
+- By default Vizardry finds the matching plugin with the highest star rating on github.
   This is usually, but not always, the one you want, so pay attention and look
   at the readme. Remember that you can use `:Scry` to list more results, or just
   walk through the results.
