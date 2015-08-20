@@ -22,6 +22,7 @@ see [submodules](#submodules)).
 + Search script written by specific user with `:Scry` and `:Invoke`
 + Automatically call `:Helptags` every time a plugin is Invoked.
 
+**Note:** Since v1.1, `VizardrySortScryResults` is replaced by VizardrySearchOptions
 ### <a name="submodules">How to use Vizardry with submodules ?</a>
 
 Set the following variables in your vimrc:
@@ -74,13 +75,17 @@ or `:Vanish` if it contains some bad modifications.
         + `-u <user>` (search every repositories of `<user>` matching 'vim'
         + One or several `<keywords>` and `-u <user>` (in any order)
 
-    By default, search results are sorted by number of stars, but you can
-    customize this behavior:
+    It is possible to set some github search option in your vimrc, default
+    options are show forked repositories and sort by stars. These option can
+    be overwritten. For instance adding the following to your vimrc will make
+    vizardry show results sorted by number of stars hidding forked
+    repositries.
 
-        let g:VizardrySortScryResults="updated"
+        let g:VizardrySortOptions="fork:false+sort:stars"
 
-    Available parameters are `stars` (default), `forks`, `updated`, `""` (best
-    match).
+    Any combination of github option can be used, a `+` must appear between
+    each options. For the sort option, available parameters are `stars`,
+    `forks`, `updated`, by default, it show the best match.
 
 +   :Invoke [&lt;query&gt;|N]
 
@@ -196,17 +201,6 @@ Use pathogen.
 
     cd ~/.vim/bundle
     git clone https://github.com/dbeniamine/vizardry
-
-## Notes
-
-- Vizardry banishes plugins by adding a tilde to the end of their directory
-  name. This stops pathogen from reading them. If you want to remove packages
-  completely, you can use the `:Vanish` command.
-- By default Vizardry finds the matching plugin with the highest star rating on github.
-  This is usually, but not always, the one you want, so pay attention and look
-  at the readme. Remember that you can use `:Scry` to list more results, or just
-  walk through the results.
-- If you want to use submodules instead of cloning, see [submodules](#submodules)
 
 ##License
 

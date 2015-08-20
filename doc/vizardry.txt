@@ -26,6 +26,8 @@ see |Vizardry-submodules|.
 + Automatically call |:Helptags| every time a plugin is Invoked.
 
 
+Note: Since v1.1, `VizardrySortScryResults` is replaced by |VizardrySearchOptions|
+
 ===============================================================================
 Vizardry Commands                                         *Vizardry-commands* ~
 
@@ -43,23 +45,31 @@ Vizardry Commands                                         *Vizardry-commands* ~
 <
     Default is 10.
 
-    A <query> can be:                                        *Vizardry-query*
+    A <query> can be:                                          *Vizardry-query*
         + One or several <keywords>
         + A query matching the github search api (see
           https://developer.github.com/v3/search/#search-repositories)
         + -u <user> (search every repositories of <user> matching 'vim'
         + One or several <keywords> and -u <user> (in any order)
 
-                                                   *Vizardry-sortSearchResults*
-    By default, search results are sorted by number of stars, but you can
-    customize this behavior:
->
-    let g:VizardrySortScryResults="updated"
-<
-    Available parameters are `stars` (default), `forks`, `updated`, `""` (best
-    match).
+                                                        *VizardrySearchOptions*
+    It is possible to set some github search option in your vimrc, default
+    options are show forked repositories and sort by stars. These option can
+    be overwritten. For instance adding the following to your vimrc will make
+    vizardry show results sorted by number of stars hidding forked
+    repositries.
 
-:Invoke [<query>|N]                                                 *:Invoke*
+        let g:VizardrySearchOptions="fork:false+sort:stars"
+
+    Any combination of github option can be used, a `+` must appear between
+    each options. For the sort option, available parameters are `stars`,
+    `forks`, `updated`, by default, it show the best match.
+
+                                                      *VizardrySortScryResults*
+    Since v1.1, `VizardrySortScryResults` is replaced by
+    |VizardrySearchOptions|
+
+:Invoke [<query>|N]                                                   *:Invoke*
 
         + If no arguments is specified, reload your plugins.
         + If the argument is a number, ask to install the plugin with that
@@ -211,17 +221,6 @@ Use pathogen.
 >
     cd ~/.vim/bundle
     git clone https://github.com/dbeniamine/vizardry
-<
-
-Notes:
-- Vizardry banishes plugins by adding a tilde to the end of their directory
-  name. This stops pathogen from reading them. If you want to remove packages
-  completly, you can use the |:Vanish| command.
-- By default Vizardry finds the matching plugin with the highest star rating on github.
-  This is usually, but not always, the one you want, so pay attention and look
-  at the readme. Remember that you can use |:Scry| to list more results, or just
-  walk through the results.
-- If you want to use submodules instead of cloning, see |Vizardry-Submodules|
 
 ===============================================================================
 License                                                    *Vizardry-License* ~

@@ -50,8 +50,8 @@ if !exists("g:VizardryReadmeReader")
   let g:VizardryReadmeReader='view -c "set ft=markdown" -'
 endif
 
-if !exists("g:VizardrySortScryResults")
-  let g:VizardrySortScryResults="stars"
+if !exists("g:VizardrySearchOptions")
+  let g:VizardrySearchOptions='fork:true'
 endif
 
 command! -nargs=? Invoke call s:Invoke(<q-args>)
@@ -438,16 +438,16 @@ function! s:InitLists(input)
           \'^\s\s*','','')
     let s:lastScry = substitute(l:input, '\s\s*', '', 'g')
     let lastScryPlus = substitute(l:input, '\s\s*', '+', 'g')
-    let query='vim+'.lastScryPlus
+    let query=lastScryPlus
     if match(a:input, '-u') != -1
       echo "match"
       let query=substitute(query,'+$','','') "Remove useless '+' if no keyword
       let query.='+user:'.user
     endif
-    echo "Searching ".query."..."
+    let query='vim+'.g:VizardrySearchOptions.'+'.query
+    echo "Searching '".query."' ..."
     let curlResults = system(
-          \ 'curl -silent https://api.github.com/search/repositories?q='.query.
-          \'\&sort='.g:VizardrySortScryResults.'\&order=desc')
+          \ 'curl -silent https://api.github.com/search/repositories?q='.query)
     let curlResults = substitute(curlResults, 'null,','"",','g')
     let site = system('grep "full_name" | head -n '.g:VizardryNbScryResults,
           \ curlResults)
