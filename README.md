@@ -69,11 +69,12 @@ or `:Vanish` if it contains some bad modifications.
     Default is 10.
 
     A `<query>` can be:
-        + One or several `<keywords>`
-        + A query matching the github 
-        [search api](https://developer.github.com/v3/search/#search-repositories)
-        + `-u <user>` (search every repositories of `<user>` matching 'vim'
-        + One or several `<keywords>` and `-u <user>` (in any order)
+
+    + One or several `<keywords>`
+    + A query matching the github 
+    [search api](https://developer.github.com/v3/search/#search-repositories)
+    + `-u <user>` (search every repositories of `<user>` matching 'vim'
+    + One or several `<keywords>` and `-u <user>` (in any order)
 
     It is possible to set some github search option in your vimrc, default
     options are show forked repositories and sort by stars. These option can
@@ -89,12 +90,12 @@ or `:Vanish` if it contains some bad modifications.
 
 +   :Invoke [&lt;query&gt;|N]
 
-        + If no arguments is specified, reload your plugins.
-        + If the argument is a number, ask to install the plugin with that
-            number from the last `:Scry` or Invoke.
-        + If the argument is a `<query>`, search github for a plugin matching
-        `<query>` (see above)  and ask for install, the sort criteria for
-        search results can be configured (see above).
+    + If no arguments is specified, reload your plugins.
+    + If the argument is a number, ask to install the plugin with that
+        number from the last `:Scry` or Invoke.
+    + If the argument is a `<query>`, search github for a plugin matching
+    `<query>` (see above)  and ask for install, the sort criteria for
+    search results can be configured (see above).
 
 Suppose you're in the middle of vimming and you have a sudden need to surround
 random words in "scare quotes". You can't remember who made the surround
