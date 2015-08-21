@@ -356,6 +356,8 @@ endfunction
 
 " Reload scripts {{{3
 function! s:ReloadScripts()
+  " Force pathogen reload
+  unlet g:loaded_pathogen
   source $MYVIMRC
   let files=[]
   for plugin in split(&runtimepath,',')
@@ -367,7 +369,7 @@ function! s:ReloadScripts()
       endtry
     endfor
     for file in split(system ("find ".plugin.
-          \ '/autoload -name "*.vim" 2>/dev/null'),'\n')
+          \ '/after -name "*.vim" 2>/dev/null'),'\n')
       try
         exec 'silent source '.file
       catch
@@ -556,7 +558,7 @@ function! s:UnbanishCommand(bundle)
     let matchList = split(matches, "\n")
     let success=0
     for aMatch in matchList
-      if s:Unbanish(aMatch, 0) != ''
+      if s:Unbanish(aMatch, 0) != 0
         call VizardryEcho('Failed to unbanish "'.aMatch.'"','e')
       else
         call VizardryEcho("Unbanished ".aMatch,'')
@@ -575,15 +577,17 @@ endfunction
 
 function! s:Unbanish(bundle, reload)
   if exists("g:VizardryGitBaseDir")
+    let l:path=s:relativeBundleDir.'/'.a:bundle
     let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.
-          \ a:bundle.'" '.s:relativeBundleDir.'/'.a:bundle.' '.
-          \ s:relativeBundleDir.'/'.a:bundle.'~ .gitmodules'
-    let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.s:relativeBundleDir.'/'.
-          \ a:bundle.'~ '.s:relativeBundleDir.'/'.a:bundle.l:commit
+          \ a:bundle.'" '.l:path.' '.l:path.'~ .gitmodules'
+    let l:cmd='cd '.g:VizardryGitBaseDir.' && git mv '.l:path.'~ '.l:path.
+          \ l:commit.' && git submodule update '.l:path
   else
-    let l:cmd='mv '.s:bundleDir.'/'.a:bundle.'~ '.s:bundleDir.'/'.a:bundle
+    let l:path=s:bundleDir.'/'.a:bundle
+    let l:cmd='mv '.l:path.'~ '.l:path
   endif
-  let ret = system(l:cmd)
+  call system(l:cmd)
+  let ret=v:shell_error
   call s:UnbanishMagic(a:bundle)
   if a:reload
     call s:ReloadScripts()
