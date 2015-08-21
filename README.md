@@ -97,10 +97,10 @@ or `:Vanish` if it contains some bad modifications.
     `<query>` (see above)  and ask for install, the sort criteria for
     search results can be configured (see above).
 
-Suppose you're in the middle of vimming and you have a sudden need to surround
-random words in "scare quotes". You can't remember who made the surround
-plugin, or whether it's called surround.vim, vim-surround or
-vim-surround-plugin. Most importantly, you're lazy.
+    Suppose you're in the middle of vimming and you have a sudden need to surround
+    random words in "scare quotes". You can't remember who made the surround
+    plugin, or whether it's called surround.vim, vim-surround or
+    vim-surround-plugin. Most importantly, you're lazy.
 
 
     Just type:
