@@ -77,7 +77,7 @@ function! vizardry#local#Banish(input, type)
   let inputNice = substitute(a:input, '\s\s*', '', 'g')
   let matches = vizardry#ListInvoked(inputNice)
   if matches == ''
-    if ListBanished(inputNice) != ''
+    if vizardry#ListBanished(inputNice) != ''
       call vizardry#echo('"'.inputNice.'" has already been banished','w')
     else
       call vizardry#echo('There is no plugin named "'.inputNice.'"','e')

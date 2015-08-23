@@ -49,14 +49,14 @@ function! vizardry#remote#grabRepo(site, name)
   if exists("g:VizardryGitBaseDir")
     let l:commit=' && git commit -m "'.g:VizardryCommitMsgs['Invoke'].' '.
           \ a:name.'" '.g:vizardry#relativeBundleDir.'/'.a:name.' .gitmodules'
-    let l:precmd=':!cd '.g:VizardryGitBaseDir
+    let l:precmd=':!cd '.g:VizardryGitBaseDir.' && '
     let l:path=g:vizardry#relativeBundleDir
   else
     let l:commit=''
-    let l:precmd=''
+    let l:precmd=':!'
     let l:path=g:vizardry#bundleDir
   endif
-  execute l:precmd.' && git '.g:VizardryGitMethod.' https://github.com/'.
+  execute l:precmd.' git '.g:VizardryGitMethod.' https://github.com/'.
         \ a:site.' '.l:path.'/'.a:name.l:commit
 endfunction
 
@@ -144,6 +144,7 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
     endif
   endwhile
   redraw
+  echo ret
   return ret
 endfunction
 
