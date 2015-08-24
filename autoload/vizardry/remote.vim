@@ -129,9 +129,7 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
             \ '\s*"download_url"[^"]*"\(.*\)",.*','\1','')
       call vizardry#echo("Retrieving README",'s')
       if readmeurl == ""
-        echohl WarningMsg
         call vizardry#echo("No readme found",'e')
-        echohl None
       else
         execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.
               \ g:VizardryReadmeReader
@@ -144,7 +142,6 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
     endif
   endwhile
   redraw
-  echo ret
   return ret
 endfunction
 
@@ -195,8 +192,8 @@ function! vizardry#remote#Invoke(input)
     return
   endif
 
+  if a:input =~ "[0-9][0-9]*"
   let inputNumber = str2nr(a:input)
-  if inputNumber!=0
     " Input is a number search from previous search results
     if exists("g:vizardry#siteList") && inputNumber < len(g:vizardry#siteList)
           \|| a:input=="0"
