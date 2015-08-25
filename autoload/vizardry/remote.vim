@@ -40,6 +40,10 @@ if !exists("g:VizardrySearchOptions")
   let g:VizardrySearchOptions='fork:true'
 endif
 
+if !exists("g:VizardryViewReadmeOnEvolve")
+  let g:VizardryViewReadmeOnEvolve=0
+endif
+
 let g:vizardry#remote#EvolveVimOrgPath = g:vizardry#scriptDir.'/plugin/EvolveVimOrgPlugins.sh'
 " Functions {{{1
 
@@ -74,6 +78,25 @@ function! vizardry#remote#testRepo(repository)
   endfor
   return ""
 endfunction
+
+" Display Readme {{{2
+function! vizardry#remote#DisplayReadme(site)
+  call vizardry#echo("Looking for README url",'s')
+  let readmeurl=system('curl -silent https://api.github.com/repos/'.
+        \ a:site.'/readme | grep download_url')
+  let readmeurl=substitute(readmeurl,
+        \ '\s*"download_url"[^"]*"\(.*\)",.*','\1','')
+  call vizardry#echo("Retrieving README",'s')
+  if readmeurl == ""
+    call vizardry#echo("No readme found",'e')
+  else
+    execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.
+          \ g:VizardryReadmeReader
+    sleep 10
+  endif
+endfunction
+
+
 
 " Invoke helper {{{2
 function! vizardry#remote#handleInvokation(site, description, inputNice, index)
@@ -122,18 +145,7 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
       let ret=a:index+1
       let valid = 1
     elseif response == 'd'
-      call vizardry#echo("Looking for README url",'s')
-      let readmeurl=system('curl -silent https://api.github.com/repos/'.
-            \ a:site.'/readme | grep download_url')
-      let readmeurl=substitute(readmeurl,
-            \ '\s*"download_url"[^"]*"\(.*\)",.*','\1','')
-      call vizardry#echo("Retrieving README",'s')
-      if readmeurl == ""
-        call vizardry#echo("No readme found",'e')
-      else
-        execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.
-              \ g:VizardryReadmeReader
-      endif
+      call vizardry#remote#DisplayReadme(a:site)
     elseif response == 'a'
       let valid=1
     elseif response == 'p'
@@ -260,6 +272,17 @@ function s:GitEvolve(path)
   call vizardry#echo(l:ret,'')
   if l:ret=~'Already up-to-date'
     return ''
+  endif
+  if g:VizardryViewReadmeOnEvolve == 1
+    let response=vizardry#doPrompt(a:path.' Evolved, show Readme ? (Yes,No)',
+          \['y','n'])
+    if response =='y'
+      let l:site=system('cd '.a:path.' && git remote -v')
+      let l:site=substitute(site,'origin\s*\(\S*\).*','\1','')
+      let l:site=substitute(site,'.*github\.com.\(.*\)','\1','')
+      let l:site=substitute(site,'\(.*\).git','\1','')
+      call vizardry#remote#DisplayReadme(site)
+    endif
   endif
   return a:path
 endfunction

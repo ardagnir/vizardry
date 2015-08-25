@@ -164,6 +164,14 @@ or `:Vanish` if it contains some bad modifications.
 
         git pull origin master
 
+    Sometimes it can be a good idea to take a quick look at a plugin's README
+    when updating, to do so, add the following to your vimrc:
+
+        let g:VizardryViewReadmeOnEvolve=1
+
+    `:Evolve` will then prompt ask you to display readme each time a plugin is
+    upgraded.
+
     `:Evolve` is also able to upgrade plugin downloaded from vim.org, to do so,
     you need to create a `.metainfos` file at the root of the plugin directory
     (not yout bundle directory). Such a file is composed of two lines:
