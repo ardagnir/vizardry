@@ -10,6 +10,16 @@ In 2015 you can even upgrade plugins from any git repo or vim.org using
 |:Evolve| |Vizardry-Upgrade|.
 
 ===============================================================================
+Release notes ?                                       *Vizardry-releaseNotes* ~
+
+* v1.3 allow to Invoke directly from Scry, to do so, I had to modify the input
+  method (using `:input()`, instead of `:getchar()`), for the user the result
+  is that it is now necessary to hit 'enter' after answering a prompt from
+  Vizardry
+* Since v1.1, `VizardrySortScryResults` is replaced by VizardrySearchOptions
+
+
+===============================================================================
 Why this fork ?                                               *Vizardry-Fork* ~
 
 This fork add several nice features to the original Vizardry plugin from
@@ -23,10 +33,8 @@ see |Vizardry-submodules|.
 + Navigate through search results with |:Invoke|
 + Search for plugins written by a specific user
 + Set the length of |:Scry| results list.
++ Go directly from |:Scry| to |:Invoke|
 + Automatically call |:Helptags| every time a plugin is Invoked.
-
-
-Note: Since v1.1, `VizardrySortScryResults` is replaced by |VizardrySearchOptions|
 
 ===============================================================================
 Vizardry Commands                                         *Vizardry-commands* ~
@@ -37,6 +45,9 @@ Vizardry Commands                                         *Vizardry-commands* ~
     + If no <query> is given, list all invoked and banished plugins.
     + If a <query> is specified (see |Vizardry-query|), search github for a
     script matching <query> in title or readme and list N first results.
+    After the search, ̀`Scry` will prompt you to `Invoke` a script, hit `q` to
+    exit, or a number to `Invoke` the corresponding script.
+
 
     The number of results displayed can be configured by adding the following
     to your vimrc:
@@ -54,9 +65,9 @@ Vizardry Commands                                         *Vizardry-commands* ~
 
                                                         *VizardrySearchOptions*
     It is possible to set some github search option in your vimrc, default
-    options are show forked repositories and sort by stars. These option can
-    be overwritten. For instance adding the following to your vimrc will make
-    vizardry show results sorted by number of stars hidding forked
+    options are show forked repositories and sort by pertinence. These options
+    can be overwritten. For instance adding the following to your vimrc will
+    make vizardry show results sorted by number of stars hidding forked
     repositries.
 
         let g:VizardrySearchOptions="fork:false+sort:stars"

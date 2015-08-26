@@ -38,7 +38,9 @@ endif
 " Prompt {{{1
 
 " Colored echo
-function! vizardry#echo(msg,type)
+" If extra argument is >0, then return the input
+function! vizardry#echo(msg,type,...)
+  let ret=''
   if a:type=='e'
     let group='ErrorMsg'
   elseif a:type=='w'
@@ -51,8 +53,13 @@ function! vizardry#echo(msg,type)
     let group='Normal'
   endif
   execute 'echohl '.group
-  echo a:msg
+  if a:0 > 0 && a:1 > 0
+    let ret=input(a:msg)
+  else
+    echo a:msg
+  endif
   echohl None
+  return ret
 endfunction
 
 function! vizardry#listChoices(choices)
@@ -74,18 +81,13 @@ function! vizardry#listChoices(choices)
   return ret.'or '.a:choices[length-1]
 endfunction
 
-
-
 function! vizardry#doPrompt(prompt, inputChoices)
-  call vizardry#echo(a:prompt,'q')
   while 1
-    let choice = tolower(nr2char(getchar()))
-    for inputChoice in a:inputChoices
-      if inputChoice == choice
+    let choice=vizardry#echo(a:prompt,'q',1)
+    if index(a:inputChoices,choice,0,1) >= 0
         return choice
-      endif
-    endfor
-    call vizardry#echo("Invalid choice: Type ".vizardry#listChoices(a:inputChoices).
+    endif
+    call vizardry#echo("\nInvalid choice: Type ".vizardry#listChoices(a:inputChoices).
           \": ",'w')
   endwhile
 endfunction
@@ -136,13 +138,9 @@ endfunction
 function! vizardry#DisplayInvoked()
   let invokedList = split(vizardry#ListInvoked('*'),'\n')
   if len(invokedList) == ''
-    echohl Define
     call vizardry#echo("No plugins invoked",'w')
-    echohl None
   else
-    echohl Define
     call vizardry#echo("Invoked: ",'')
-    echohl None
     let maxlen=0
     for invoked in invokedList
       if len(invoked)>maxlen
@@ -166,13 +164,9 @@ endfunction
 function! vizardry#DisplayBanished()
   let banishedList = split(vizardry#ListBanished('*'),'\n')
   if len(banishedList) == ''
-    echohl Define
     call vizardry#echo("No plugins banished",'w')
-    echohl None
   else
-    echohl Define
     call vizardry#echo("Banished: ",'')
-    echohl None
     let maxlen=0
     for banished in banishedList
       if len(banished)>maxlen

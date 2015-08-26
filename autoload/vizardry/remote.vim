@@ -92,7 +92,6 @@ function! vizardry#remote#DisplayReadme(site)
   else
     execute ':!curl -silent '.readmeurl.' | sed "1,/^$/ d" | '.
           \ g:VizardryReadmeReader
-    sleep 10
   endif
 endfunction
 
@@ -111,11 +110,11 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
     let response = vizardry#doPrompt("Clone as \"".inputNice.
           \ "\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)",
           \ ['y','r','d','n','p','a'])
-    if response == 'y'
+    if response ==? 'y'
       call vizardry#remote#grabRepo(a:site, inputNice)
       call vizardry#ReloadScripts()
       let valid=1
-    elseif response == 'r'
+    elseif response ==? 'r'
       let newName = ""
       let inputting = 1
       while inputting
@@ -141,14 +140,14 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
         call vizardry#ReloadScripts()
         let valid = 1
       endif
-    elseif response == 'n'
+    elseif response ==? 'n'
       let ret=a:index+1
       let valid = 1
-    elseif response == 'd'
+    elseif response ==? 'd'
       call vizardry#remote#DisplayReadme(a:site)
-    elseif response == 'a'
+    elseif response ==? 'a'
       let valid=1
-    elseif response == 'p'
+    elseif response ==? 'p'
       let ret=a:index-1
       let valid=1
     endif
@@ -350,16 +349,24 @@ function! vizardry#remote#Scry(input)
   else
     call vizardry#remote#InitLists(a:input)
     let index=0
+    let choices=[]
     let length=len(g:vizardry#siteList)
     redraw
     while index<length
       call vizardry#echo(index.": ".g:vizardry#siteList[index],'')
       call vizardry#echo('('.g:vizardry#descriptionList[index].')','')
+      call add(choices,string(index))
       let index=index+1
       if index<length
         echo "\n"
       endif
     endwhile
+    call add(choices,'q')
+    let ans=vizardry#doPrompt("Invoke script number [0:".length.
+          \"] or quit Scry (q) ?",choices)
+    if ans!='q'
+      call vizardry#remote#Invoke(ans)
+    endif
   endif
 endfunction
 

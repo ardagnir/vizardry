@@ -7,6 +7,13 @@ In 2014, you can just type ":Invoke &lt;keyword&gt;" and Vizardry will automatic
 
 In 2015 you can even upgrade plugins from any git repo or vim.org using [:Evolve](#evolve).
 
+## Release notes
+
+* v1.3 allow to Invoke directly from Scry, to do so, I had to modify the input
+  method (using `:input()`, instead of `:getchar()`), for the user the result
+  is that it is now necessary to hit 'enter' after answering a prompt from
+  Vizardry
+* Since v1.1, `VizardrySortScryResults` is replaced by VizardrySearchOptions
 
 ## <a name="Fork">Why this fork ?</a>
 
@@ -19,10 +26,10 @@ see [submodules](#submodules)).
 + Retrieve the README.md file while using `:Invoke`.
 + Navigate through search results with `:Invoke`
 + Set the length of `Scry` results list.
++ Go directly from `Scry`  to `Invoke`
 + Search script written by specific user with `:Scry` and `:Invoke`
 + Automatically call `:Helptags` every time a plugin is Invoked.
 
-**Note:** Since v1.1, `VizardrySortScryResults` is replaced by VizardrySearchOptions
 ### <a name="submodules">How to use Vizardry with submodules ?</a>
 
 Set the following variables in your vimrc:
@@ -60,6 +67,8 @@ or `:Vanish` if it contains some bad modifications.
     + If no <query> is given, list all invoked and banished plugins.
     + If a <query> is specified (see below), search github for a
     script matching <query> in title or readme and list N first results.
+    After the search, ̀`Scry` will prompt you to `Invoke` a script, hit `q` to
+    exit, or a number to `Invoke` the corresponding script.
 
     The number of results displayed can be configured by adding the following
     to your vimrc:
@@ -77,9 +86,9 @@ or `:Vanish` if it contains some bad modifications.
     + One or several `<keywords>` and `-u <user>` (in any order)
 
     It is possible to set some github search option in your vimrc, default
-    options are show forked repositories and sort by stars. These option can
-    be overwritten. For instance adding the following to your vimrc will make
-    vizardry show results sorted by number of stars hidding forked
+    options are show forked repositories and sort by pertinence. These options
+    can be overwritten. For instance adding the following to your vimrc will
+    make vizardry show results sorted by number of stars hidding forked
     repositries.
 
         let g:VizardrySortOptions="fork:false+sort:stars"
