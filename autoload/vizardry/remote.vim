@@ -103,9 +103,9 @@ function! vizardry#remote#handleInvokation(site, description, inputNice, index)
   let bundle=substitute(a:site, '.*/','','')
   let inputNice = vizardry#formValidBundle(bundle)
   let ret=-1
-  let idx=a:index+1
+  let len=len(g:vizardry#siteList)-1
   while valid == 0
-    call vizardry#echo("Result ".idx."/".len(g:vizardry#siteList).
+    call vizardry#echo("Result ".a:index."/".len.
           \ ": ".a:site."\n(".a:description.")\n\n",'')
     let response = vizardry#doPrompt("Clone as \"".inputNice.
           \ "\"? (Yes/Rename/DisplayMore/Next/Previous/Abort)",
@@ -213,9 +213,15 @@ function! vizardry#remote#Invoke(input)
             \g:vizardry#lastScry.'":','s')
       let inputNice = g:vizardry#lastScry
     else
-      call vizardry#echo("Invalid command :'Invoke ".a:input.
-            \"' numeric argument can only be used after an actual search ".
-            \ "(Scry or invoke)",'e')
+      if !exists("g:vizardry#siteList")
+        call vizardry#echo("Invalid command :'Invoke ".a:input.
+              \"' numeric argument can only be used after an actual search ".
+              \ "(Scry or invoke)",'e')
+      else
+        let max=len(g:vizardry#siteList)-1
+        call vizardry#echo("Invalid plugin number ".inputNumber." while max is "
+              \.max,'e')
+      endif
       return
     endif
   else
@@ -238,7 +244,7 @@ function! vizardry#remote#Invoke(input)
   while( l:index >= 0 && l:index < len(g:vizardry#siteList))
     let site=g:vizardry#siteList[l:index]
     let description=g:vizardry#descriptionList[l:index]
-  let matchingBundle = vizardry#remote#testRepo(site)
+    let matchingBundle = vizardry#remote#testRepo(site)
     if matchingBundle != ""
       call vizardry#echo('Found '.site,'s')
       call vizardry#echo('('.description.')','')
