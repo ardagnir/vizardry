@@ -174,11 +174,11 @@ or `:Vanish` if it contains some bad modifications.
         git pull origin master
 
     Sometimes it can be a good idea to take a quick look at a plugin's README
-    when updating, to do so, add the following to your vimrc:
+    or git log when updating, to do so, add the following to your vimrc:
 
         let g:VizardryViewReadmeOnEvolve=1
 
-    `:Evolve` will then prompt ask you to display readme each time a plugin is
+    `:Evolve` will then ask you to display readme or log each time a plugin is
     upgraded.
 
     `:Evolve` is also able to upgrade plugin downloaded from vim.org, to do so,
