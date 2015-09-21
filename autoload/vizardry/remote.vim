@@ -280,8 +280,9 @@ function s:GitEvolve(path)
   endif
   if g:VizardryViewReadmeOnEvolve == 1
     let continue=0
+    let name=substitute(substitute(a:path,'.*/','',''),'\.git','','')
     while continue==0
-    let response=vizardry#doPrompt(a:path.' Evolved, show Readme, Log or Continue ? (r,l,c)',
+    let response=vizardry#doPrompt(name.' Evolved, show Readme, Log or Continue ? (r,l,c)',
           \['r','l','c'])
       if response =='r'
         let l:site=system('cd '.a:path.' && git remote -v')
