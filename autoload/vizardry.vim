@@ -83,9 +83,10 @@ endfunction
 
 function! vizardry#doPrompt(prompt, inputChoices)
   while 1
-    let choice=vizardry#echo(a:prompt,'q',1)
+    let choice=vizardry#echo(a:prompt."\n",'q',1)
     if index(a:inputChoices,choice,0,1) >= 0
-        return choice
+      echo "\n"
+      return choice
     endif
     call vizardry#echo("\nInvalid choice: Type ".vizardry#listChoices(a:inputChoices).
           \": ",'w')
