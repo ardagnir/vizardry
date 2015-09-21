@@ -57,7 +57,7 @@ command! -nargs=? -complete=custom,vizardry#ListAllInvoked Vanish
       \ call vizardry#local#Banish(<q-args>, 'Vanish')
 command! -nargs=? -complete=custom,vizardry#ListAllBanished Unbanish
       \ call vizardry#local#UnbanishCommand(<q-args>)
-command! -nargs=? -complete=custom,vizardry#ListAllBanished Evolve
+command! -nargs=? -complete=custom,vizardry#ListAllInvoked Evolve
       \ call vizardry#remote#Evolve(<q-args>,0)
 command! -nargs=? Scry
       \ call vizardry#remote#Scry(<q-args>)
