@@ -73,6 +73,7 @@ Use pathogen.
 ### License
 
 Vizardry is licensed under the AGPL v3
+
 Author: David Beniamine
 
 ## How to use Vizardry with submodules ?
