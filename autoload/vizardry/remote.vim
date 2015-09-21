@@ -166,7 +166,6 @@ function! vizardry#remote#InitLists(input)
     let lastScryPlus = substitute(l:input, '\s\s*', '+', 'g')
     let query=lastScryPlus
     if match(a:input, '-u') != -1
-      call vizardry#echo("match",'')
       let query=substitute(query,'+$','','') "Remove useless '+' if no keyword
       let query.='+user:'.user
     endif
@@ -189,8 +188,12 @@ function! vizardry#remote#InitLists(input)
           \ '\s*"description"[^"]*"\([^"\\]*\(\\.[^"\\]*\)*\)"[^\n]*','\1','g')
     let description = substitute(description, '\\"', '"', 'g')
     let g:vizardry#descriptionList = split(description, '\n')
+    let ret=len(g:vizardry#siteList)
+    if ret == 0
+      call vizardry#echo("No results found for query '".a:input."'",'w')
+    endif
+    return ret
 endfunction
-
 
 " Commands {{{ 1
 
@@ -236,7 +239,7 @@ function! vizardry#remote#Invoke(input)
         return
       endif
     endif
-    call vizardry#remote#InitLists(a:input)
+    let len=vizardry#remote#InitLists(a:input)
     let l:index=0
   endif
 
@@ -302,6 +305,11 @@ endfunction
 
 " Upgrade a specific plugin (vim.org)
 function s:VimOrgEvolve(path)
+  let name=substitute(a:path,'.*/','','')
+  call vizardry#echo(name.' is not a git repo, trying to update it as a vim.org script', 's')
+  call vizardry#echo("Directly updating from vim.org is deprecated\n".
+        \"You can install ".name." from vim.org's github account:\n".
+        \":Scry -u vim-scripts ".name, 'w')
   let l:ret=system(g:vizardry#remote#EvolveVimOrgPath.' '.a:path)
   call vizardry#echo(l:ret,'')
   if l:ret=~'upgrading .*'
@@ -361,10 +369,12 @@ function! vizardry#remote#Scry(input)
     echo "\n"
     call vizardry#DisplayBanished()
   else
-    call vizardry#remote#InitLists(a:input)
+    let length=vizardry#remote#InitLists(a:input)
     let index=0
     let choices=[]
-    let length=len(g:vizardry#siteList)
+    if length == 0
+      return
+    endif
     redraw
     while index<length
       call vizardry#echo(index.": ".g:vizardry#siteList[index],'')
