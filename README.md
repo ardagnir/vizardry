@@ -11,6 +11,28 @@
 
                     A vim plugin manager for lazy people
 
+## Table of contents
+
+1. [Release notes](#release-notes)
+2. [Introduction](#introduction)
+    1. [Why This Fork ?](#why-this-fork)
+    2. [Requirements](#requirements)
+    3. [Installation](#installation)
+    4. [License](#license)
+4. [Submodules](#how-to-use-vizardry-with-submodules)
+5. [Commands](#commands)
+    1. [Scry](#scry)
+        1. [Number of results](#number-of-results)
+        2. [Queries](#queries)
+        3. [Search Options](#search-options)
+    2. [Invoke](#invoke)
+    3. [Banish](#banish)
+    4. [Unbanish](#unbanish)
+    5. [Vanish](#vanish)
+    6. [Evolve](#evolve)
+        1. [Display readme on evolve](#display-readme-on-evolve)
+        2. [Evolve from vim.org](#evolve-from-vim.org)
+
 ## Release notes
 
 Current Version: 1.3.2
@@ -39,7 +61,7 @@ features including:
 + `Vanish` command to actually remove a plugin.
 + `Evolve` command to upgrade one or every plugins see [Evolve](#evolve).
 + Complete submodule handling for people having their vim config in a git repo
-(see [submodules](#how-to-use-vizardry-with-submodules-?)).
+(see [submodules](#how-to-use-vizardry-with-submodules)).
 + Dislay README.md file inside vim while using `:Invoke`.
 + Navigate through search results with `:Invoke`
 + Set the length of `Scry` results list.
@@ -110,7 +132,7 @@ or `:Vanish` if it contains some bad modifications.
 
 ### Scry
 
-`:Scry [&lt;query&gt;]`
+`:Scry [<query>]`
 
 + If no <query> is given, list all invoked and banished plugins.
 + If a <query> is specified (see below), search github for a script matching
@@ -153,7 +175,7 @@ each options. For the sort option, available parameters are `stars`,
 
 ### Invoke
 
-`:Invoke [&lt;query&gt;|N]`
+`:Invoke [<query>|N]`
 
 +   If no arguments is specified, reload your plugins.
 +   If the argument is a number, ask to install the plugin with that
@@ -209,26 +231,26 @@ Just as easy.
 
 ### Banish
 
-`:Banish &lt;keyword&gt;`
+`:Banish <keyword>`
 
 Banish a plugin, this only forbid pathogen to load it and does not remove
 the files. You need to restart vim to see the effects.
 
 ### UnBanish
 
-`:Unbanish &lt;keyword&gt;`
+`:Unbanish <keyword>`
 
 Reverse a banish.
 
 ### Vanish
 
-`:Vanish &lt;keyword&gt;`
+`:Vanish <keyword>`
 
 Remove definitively a plugin's files.
 
 ### Evolve
 
-`:Evolve  [&lt;keyword&gt;]`
+`:Evolve  [<keyword>]`
 
 Upgrade the plugin matching &lt;keyword&gt;. If no &lt;keyword&gt; is given, upgrade
 all possible plugins.

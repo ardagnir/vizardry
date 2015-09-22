@@ -16,9 +16,9 @@ Table of Contents                                         *Vizardry-contents* ~
     1. Release notes...............................|Vizardry-releaseNotes|
     2. Introduction................................|Vizardry-introduction|
         2.1 Why This Fork..........................|Vizardry-fork|
-        2.2. Requirements..........................|Vizardry-requirements|
-        2.3. Installation..........................|Vizardry-installation|
-        2.4. License...............................|Vizardry-License|
+        2.2 Requirements...........................|Vizardry-requirements|
+        2.3 Installation...........................|Vizardry-installation|
+        2.4 License................................|Vizardry-License|
     4. Submodules..................................|Vizardry-submodule|
     5. Commands....................................|Vizardry-commands|
         5.1 Scry...................................|:Scry|
